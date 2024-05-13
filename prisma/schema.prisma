@@ -58,6 +58,7 @@ model HealthUnit {
   email       String?
   latitude    Decimal
   longitude   Decimal
+  imgPath     String?   @map("img_path")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime? @updatedAt @map("updated_at")
 
@@ -138,6 +139,7 @@ model Nurse {
   id        String    @id @default(uuid())
   name      String
   coren     String?
+  imgPath   String?   @map("img_path")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
@@ -157,6 +159,7 @@ model Doctor {
   name      String
   crm       String?
   specialty String?
+  imgPath   String?   @map("img_path")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
@@ -175,6 +178,7 @@ model NursingTechnician {
   id        String   @id @default(uuid())
   name      String
   coren     String?
+  imgPath   String?  @map("img_path")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -193,6 +197,7 @@ model Dentist {
   id        String    @id @default(uuid())
   name      String
   cro       String?
+  imgPath   String?   @map("img_path")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
@@ -210,6 +215,7 @@ model Dentist {
 model HealthAgent {
   id        String    @id @default(uuid())
   name      String
+  imgPath   String?   @map("img_path")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
