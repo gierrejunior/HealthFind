@@ -1,0 +1,246 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  name      String?
+  password  String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  createdByHealthUnits       HealthUnit[]        @relation("CreatedBy")
+  updatedByHealthUnits       HealthUnit[]        @relation("UpdatedBy")
+  createdByHealthUnitArea    HealthUnitArea[]    @relation("CreatedBy")
+  updatedByHealthUnitArea    HealthUnitArea[]    @relation("UpdatedBy")
+  createdByHealthTeam        HealthTeam[]        @relation("CreatedBy")
+  updatedByHealthTeam        HealthTeam[]        @relation("UpdatedBy")
+  createdByHealthTeamArea    HealthTeamArea[]    @relation("CreatedBy")
+  updatedByHealthTeamArea    HealthTeamArea[]    @relation("UpdatedBy")
+  createdByNurse             Nurse[]             @relation("CreatedBy")
+  updatedByNurse             Nurse[]             @relation("UpdatedBy")
+  createdByDoctor            Doctor[]            @relation("CreatedBy")
+  updatedByDoctor            Doctor[]            @relation("UpdatedBy")
+  createdByNursingTechnician NursingTechnician[] @relation("CreatedBy")
+  updatedByNursingTechnician NursingTechnician[] @relation("UpdatedBy")
+  createdByDentist           Dentist[]           @relation("CreatedBy")
+  updatedByDentist           Dentist[]           @relation("UpdatedBy")
+  createdByHealthAgent       HealthAgent[]       @relation("CreatedBy")
+  updatedByHealthAgent       HealthAgent[]       @relation("UpdatedBy")
+  createdByMicroArea         MicroArea[]         @relation("CreatedBy")
+  updatedByMicroArea         MicroArea[]         @relation("UpdatedBy")
+
+  @@map("users")
+}
+
+model HealthUnit {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  address     String?
+  cep         String?
+  phone       String?
+  county      String?
+  uf          String?
+  manager     String?
+  email       String?
+  latitude    Decimal
+  longitude   Decimal
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+
+  healthUnitArea HealthUnitArea?
+  healthTeams    HealthTeam[]
+
+  createdById String  @map("created_by_id")
+  updatedById String? @map("updated_by_id")
+
+  CreatedBy User  @relation("CreatedBy", fields: [createdById], references: [id])
+  UpdatedBy User? @relation("UpdatedBy", fields: [updatedById], references: [id])
+
+  @@map("health_units")
+}
+
+model HealthUnitArea {
+  id        String    @id @default(uuid())
+  title     String?
+  geojson   Json
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  createdById  String  @map("created_by_id")
+  updatedById  String? @map("updated_by_id")
+  healthUnitId String  @unique @map("health_unit_id")
+
+  CreatedBy  User       @relation("CreatedBy", fields: [createdById], references: [id])
+  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
+  HealthUnit HealthUnit @relation(fields: [healthUnitId], references: [id])
+
+  @@map("health_unit_areas")
+}
+
+model HealthTeam {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+
+  healthTeamArea     HealthTeamArea?
+  nurses             Nurse[]
+  doctors            Doctor[]
+  nursingTechnicians NursingTechnician[]
+  Dentist            Dentist[]
+  healthAgents       HealthAgent[]
+
+  createdById  String  @map("created_by_id")
+  updatedById  String? @map("updated_by_id")
+  healthUnitId String  @map("health_unit_id")
+
+  CreatedBy  User       @relation("CreatedBy", fields: [createdById], references: [id])
+  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
+  healthUnit HealthUnit @relation(fields: [healthUnitId], references: [id])
+
+  @@map("health_teams")
+}
+
+model HealthTeamArea {
+  id        String    @id @default(uuid())
+  title     String?
+  geojson   Json
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  createdById  String  @map("created_by_id")
+  updatedById  String? @map("updated_by_id")
+  healthTeamId String  @unique @map("health_team_id")
+
+  CreatedBy  User       @relation("CreatedBy", fields: [createdById], references: [id])
+  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
+  healthTeam HealthTeam @relation(fields: [healthTeamId], references: [id])
+
+  @@map("health_team_areas")
+}
+
+model Nurse {
+  id        String    @id @default(uuid())
+  name      String
+  coren     String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  createdById  String  @map("created_by_id")
+  updatedById  String? @map("updated_by_id")
+  healthTeamId String  @map("health_team_id")
+
+  CreatedBy  User       @relation("CreatedBy", fields: [createdById], references: [id])
+  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
+  healthTeam HealthTeam @relation(fields: [healthTeamId], references: [id])
+
+  @@map("nurses")
+}
+
+model Doctor {
+  id        String    @id @default(uuid())
+  name      String
+  crm       String?
+  specialty String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  createdById  String  @map("created_by_id")
+  updatedById  String? @map("updated_by_id")
+  healthTeamId String  @map("health_team_id")
+
+  CreatedBy  User       @relation("CreatedBy", fields: [createdById], references: [id])
+  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
+  healthTeam HealthTeam @relation(fields: [healthTeamId], references: [id])
+
+  @@map("doctors")
+}
+
+model NursingTechnician {
+  id        String   @id @default(uuid())
+  name      String
+  coren     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  createdById  String  @map("created_by_id")
+  updatedById  String? @map("updated_by_id")
+  healthTeamId String  @map("health_team_id")
+
+  CreatedBy  User       @relation("CreatedBy", fields: [createdById], references: [id])
+  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
+  healthTeam HealthTeam @relation(fields: [healthTeamId], references: [id])
+
+  @@map("nursing_technicians")
+}
+
+model Dentist {
+  id        String    @id @default(uuid())
+  name      String
+  cro       String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  createdById  String  @map("created_by_id")
+  updatedById  String? @map("updated_by_id")
+  healthTeamId String  @map("health_team_id")
+
+  CreatedBy  User       @relation("CreatedBy", fields: [createdById], references: [id])
+  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
+  healthTeam HealthTeam @relation(fields: [healthTeamId], references: [id])
+
+  @@map("dentists")
+}
+
+model HealthAgent {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  MicroArea MicroArea?
+
+  createdById  String  @map("created_by_id")
+  updatedById  String? @map("updated_by_id")
+  healthTeamId String? @map("health_team_id")
+
+  CreatedBy  User        @relation("CreatedBy", fields: [createdById], references: [id])
+  UpdatedBy  User?       @relation("UpdatedBy", fields: [updatedById], references: [id])
+  HealthTeam HealthTeam? @relation(fields: [healthTeamId], references: [id])
+
+  @@map("health_agents")
+}
+
+model MicroArea {
+  id                String    @id @default(uuid())
+  title             String?
+  number_micro_area Int
+  geojson           Json
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime? @updatedAt @map("updated_at")
+
+  createdById   String  @map("created_by_id")
+  updatedById   String? @map("updated_by_id")
+  healthAgentId String  @unique @map("health_agent_id")
+
+  CreatedBy   User        @relation("CreatedBy", fields: [createdById], references: [id])
+  UpdatedBy   User?       @relation("UpdatedBy", fields: [updatedById], references: [id])
+  healthAgent HealthAgent @relation(fields: [healthAgentId], references: [id])
+
+  @@map("micro_areas")
+}
