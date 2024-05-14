@@ -68,10 +68,10 @@ model HealthUnit {
   healthUnitArea HealthUnitArea?
   healthTeams    HealthTeam[]
 
-  createdById String  @map("created_by_id")
+  createdById String? @map("created_by_id")
   updatedById String? @map("updated_by_id")
 
-  CreatedBy User  @relation("CreatedBy", fields: [createdById], references: [id])
+  CreatedBy User? @relation("CreatedBy", fields: [createdById], references: [id])
   UpdatedBy User? @relation("UpdatedBy", fields: [updatedById], references: [id])
 
   @@map("health_units")
@@ -84,11 +84,11 @@ model HealthUnitArea {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
-  createdById  String  @map("created_by_id")
+  createdById  String? @map("created_by_id")
   updatedById  String? @map("updated_by_id")
   healthUnitId String  @unique @map("health_unit_id")
 
-  CreatedBy  User       @relation("CreatedBy", fields: [createdById], references: [id])
+  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id])
   UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
   HealthUnit HealthUnit @relation(fields: [healthUnitId], references: [id])
 
@@ -109,11 +109,11 @@ model HealthTeam {
   Dentist            Dentist[]
   healthAgents       HealthAgent[]
 
-  createdById  String  @map("created_by_id")
+  createdById  String? @map("created_by_id")
   updatedById  String? @map("updated_by_id")
   healthUnitId String  @map("health_unit_id")
 
-  CreatedBy  User       @relation("CreatedBy", fields: [createdById], references: [id])
+  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id])
   UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
   healthUnit HealthUnit @relation(fields: [healthUnitId], references: [id])
 
@@ -127,11 +127,11 @@ model HealthTeamArea {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
-  createdById  String  @map("created_by_id")
+  createdById  String? @map("created_by_id")
   updatedById  String? @map("updated_by_id")
   healthTeamId String  @unique @map("health_team_id")
 
-  CreatedBy  User       @relation("CreatedBy", fields: [createdById], references: [id])
+  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id])
   UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
   healthTeam HealthTeam @relation(fields: [healthTeamId], references: [id])
 
@@ -147,11 +147,11 @@ model Nurse {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
-  createdById  String  @map("created_by_id")
+  createdById  String? @map("created_by_id")
   updatedById  String? @map("updated_by_id")
   healthTeamId String  @map("health_team_id")
 
-  CreatedBy  User       @relation("CreatedBy", fields: [createdById], references: [id])
+  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id])
   UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
   healthTeam HealthTeam @relation(fields: [healthTeamId], references: [id])
 
@@ -168,11 +168,11 @@ model Doctor {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
-  createdById  String  @map("created_by_id")
+  createdById  String? @map("created_by_id")
   updatedById  String? @map("updated_by_id")
   healthTeamId String  @map("health_team_id")
 
-  CreatedBy  User       @relation("CreatedBy", fields: [createdById], references: [id])
+  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id])
   UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
   healthTeam HealthTeam @relation(fields: [healthTeamId], references: [id])
 
@@ -187,11 +187,11 @@ model NursingTechnician {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  createdById  String  @map("created_by_id")
+  createdById  String? @map("created_by_id")
   updatedById  String? @map("updated_by_id")
   healthTeamId String  @map("health_team_id")
 
-  CreatedBy  User       @relation("CreatedBy", fields: [createdById], references: [id])
+  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id])
   UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
   healthTeam HealthTeam @relation(fields: [healthTeamId], references: [id])
 
@@ -207,11 +207,11 @@ model Dentist {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
-  createdById  String  @map("created_by_id")
+  createdById  String? @map("created_by_id")
   updatedById  String? @map("updated_by_id")
   healthTeamId String  @map("health_team_id")
 
-  CreatedBy  User       @relation("CreatedBy", fields: [createdById], references: [id])
+  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id])
   UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
   healthTeam HealthTeam @relation(fields: [healthTeamId], references: [id])
 
@@ -229,11 +229,11 @@ model HealthAgent {
 
   MicroArea MicroArea?
 
-  createdById  String  @map("created_by_id")
+  createdById  String? @map("created_by_id")
   updatedById  String? @map("updated_by_id")
   healthTeamId String? @map("health_team_id")
 
-  CreatedBy  User        @relation("CreatedBy", fields: [createdById], references: [id])
+  CreatedBy  User?       @relation("CreatedBy", fields: [createdById], references: [id])
   UpdatedBy  User?       @relation("UpdatedBy", fields: [updatedById], references: [id])
   HealthTeam HealthTeam? @relation(fields: [healthTeamId], references: [id])
 
@@ -248,11 +248,11 @@ model MicroArea {
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime? @updatedAt @map("updated_at")
 
-  createdById   String  @map("created_by_id")
+  createdById   String? @map("created_by_id")
   updatedById   String? @map("updated_by_id")
   healthAgentId String  @unique @map("health_agent_id")
 
-  CreatedBy   User        @relation("CreatedBy", fields: [createdById], references: [id])
+  CreatedBy   User?       @relation("CreatedBy", fields: [createdById], references: [id])
   UpdatedBy   User?       @relation("UpdatedBy", fields: [updatedById], references: [id])
   healthAgent HealthAgent @relation(fields: [healthAgentId], references: [id])
 

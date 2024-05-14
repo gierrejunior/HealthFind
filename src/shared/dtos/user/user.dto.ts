@@ -17,7 +17,7 @@ export const newUserDTO = z.object({
 export type NewUserDTO = z.infer<typeof newUserDTO>;
 
 export const loginDTO = z.object({
-    email: z.string().email(),
+    login: z.string(),
     password: z.string(),
 });
 
