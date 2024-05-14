@@ -83,83 +83,93 @@ yarn prisma studio
 
 # Check list endpoints:
 
+### User
+
+- [x] Post ```baseUrl```/registration
+- [ ] Get ```baseUrl```/users
+- [ ] Get ```baseUrl```/users/:id
+- [ ] Put ```baseUrl```/users/:id
+- [ ] Delete ```baseUrl```/users/:id
+- [ ] Post ```baseUrl```/login
+
+
 ### Health Units:
 
-- [ ] GET /api/v1/health-units
-- [ ] GET /api/v1/health-units/:id
-- [ ] POST /api/v1/health-units
-- [ ] PUT /api/v1/health-units/:id
-- [ ] DELETE /api/v1/health-units/:id
+- [ ] POST ```baseUrl```/health-units
+- [ ] GET ```baseUrl```/health-units
+- [ ] GET ```baseUrl```/health-units/:id
+- [ ] PUT ```baseUrl```/health-units/:id
+- [ ] DELETE ```baseUrl```/health-units/:id
   
 ### Health Areas:
 
-- [ ] GET /api/v1/health-areas
-- [ ] GET /api/v1/health-areas/:id
-- [ ] POST /api/v1/health-areas
-- [ ] PUT /api/v1/health-areas/:id
-- [ ] DELETE /api/v1/health-areas/:id
+- [ ] POST ```baseUrl```/health-areas
+- [ ] GET ```baseUrl```/health-areas
+- [ ] GET ```baseUrl```/health-areas/:id
+- [ ] PUT ```baseUrl```/health-areas/:id
+- [ ] DELETE ```baseUrl```/health-areas/:id
   
 ### Health Teams:
 
-- [ ] GET /api/v1/health-teams
-- [ ] GET /api/v1/health-teams/:id
-- [ ] POST /api/v1/health-teams
-- [ ] PUT /api/v1/health-teams/:id
-- [ ] DELETE /api/v1/health-teams/:id
+- [ ] POST ```baseUrl```/health-teams
+- [ ] GET ```baseUrl```/health-teams
+- [ ] GET ```baseUrl```/health-teams/:id
+- [ ] PUT ```baseUrl```/health-teams/:id
+- [ ] DELETE ```baseUrl```/health-teams/:id
   
 ### Health Team Areas:
 
-- [ ] GET /api/v1/health-team-areas
-- [ ] GET /api/v1/health-team-areas/:id
-- [ ] POST /api/v1/health-team-areas
-- [ ] PUT /api/v1/health-team-areas/:id
-- [ ] DELETE /api/v1/health-team-areas/:id
+- [ ] POST ```baseUrl```/health-team-areas
+- [ ] GET ```baseUrl```/health-team-areas
+- [ ] GET ```baseUrl```/health-team-areas/:id
+- [ ] PUT ```baseUrl```/health-team-areas/:id
+- [ ] DELETE ```baseUrl```/health-team-areas/:id
   
 ### Nurses:
 
-- [ ] GET /api/v1/nurses
-- [ ] GET /api/v1/nurses/:id
-- [ ] POST /api/v1/nurses
-- [ ] PUT /api/v1/nurses/:id
-- [ ] DELETE /api/v1/nurses/:id
+- [ ] POST ```baseUrl```/nurses
+- [ ] GET ```baseUrl```/nurses
+- [ ] GET ```baseUrl```/nurses/:id
+- [ ] PUT ```baseUrl```/nurses/:id
+- [ ] DELETE ```baseUrl```/nurses/:id
 
 ### Doctors:
 
-- [ ] GET /api/v1/doctors
-- [ ] GET /api/v1/doctors/:id
-- [ ] POST /api/v1/doctors
-- [ ] PUT /api/v1/doctors/:id
-- [ ] DELETE /api/v1/doctors/:id
+- [ ] POST ```baseUrl```/doctors
+- [ ] GET ```baseUrl```/doctors
+- [ ] GET ```baseUrl```/doctors/:id
+- [ ] PUT ```baseUrl```/doctors/:id
+- [ ] DELETE ```baseUrl```/doctors/:id
   
 ### Nursing Technicians:
 
-- [ ] GET /api/v1/nursing-technicians
-- [ ] GET /api/v1/nursing-technicians/:id
-- [ ] POST /api/v1/nursing-technicians
-- [ ] PUT /api/v1/nursing-technicians/:id
-- [ ] DELETE /api/v1/nursing-technicians/:id
+- [ ] POST ```baseUrl```/nursing-technicians
+- [ ] GET ```baseUrl```/nursing-technicians
+- [ ] GET ```baseUrl```/nursing-technicians/:id
+- [ ] PUT ```baseUrl```/nursing-technicians/:id
+- [ ] DELETE ```baseUrl```/nursing-technicians/:id
   
 ### Dentists:
 
-- [ ] GET /api/v1/dentists
-- [ ] GET /api/v1/dentists/:id
-- [ ] POST /api/v1/dentists
-- [ ] PUT /api/v1/dentists/:id
-- [ ] DELETE /api/v1/dentists/:id
+- [ ] POST ```baseUrl```/dentists
+- [ ] GET ```baseUrl```/dentists
+- [ ] GET ```baseUrl```/dentists/:id
+- [ ] PUT ```baseUrl```/dentists/:id
+- [ ] DELETE ```baseUrl```/dentists/:id
   
 ### Health Agents:
 
-- [ ] GET /api/v1/health-agents
-- [ ] GET /api/v1/health-agents/:id
-- [ ] POST /api/v1/health-agents
-- [ ] PUT /api/v1/health-agents/:id
-- [ ] DELETE /api/v1/health-agents/:id
+- [ ] POST ```baseUrl```/health-agents
+- [ ] GET ```baseUrl```/health-agents
+- [ ] GET ```baseUrl```/health-agents/:id
+- [ ] PUT ```baseUrl```/health-agents/:id
+- [ ] DELETE ```baseUrl```/health-agents/:id
   
 ### MicroAreas:
 
-- [ ] GET /api/v1/micro-areas
-- [ ] GET /api/v1/micro-areas/:id
-- [ ] POST /api/v1/micro-areas
-- [ ] PUT /api/v1/micro-areas/:id
-- [ ] DELETE /api/v1/micro-areas/:id
+- [ ] POST ```baseUrl```/micro-areas
+- [ ] GET ```baseUrl```/micro-areas
+- [ ] GET ```baseUrl```/micro-areas/:id
+- [ ] PUT ```baseUrl```/micro-areas/:id
+- [ ] DELETE ```baseUrl```/micro-areas/:id
   

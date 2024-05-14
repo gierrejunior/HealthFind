@@ -16,8 +16,11 @@ datasource db {
 model User {
   id        String    @id @default(uuid())
   email     String    @unique
-  name      String?
+  username  String    @unique
+  firstName String    @map("first_name")
+  lastName  String    @map("last_name")
   password  String
+  lastLogin DateTime? @default(now()) @map("last_login")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
@@ -52,8 +55,8 @@ model HealthUnit {
   address     String?
   cep         String?
   phone       String?
-  county      String?
-  uf          String?
+  city        String
+  state       String
   manager     String?
   email       String?
   latitude    Decimal
@@ -137,7 +140,8 @@ model HealthTeamArea {
 
 model Nurse {
   id        String    @id @default(uuid())
-  name      String
+  firstName String    @map("first_name")
+  lastName  String    @map("last_name")
   coren     String?
   imgPath   String?   @map("img_path")
   createdAt DateTime  @default(now()) @map("created_at")
@@ -156,7 +160,8 @@ model Nurse {
 
 model Doctor {
   id        String    @id @default(uuid())
-  name      String
+  firstName String    @map("first_name")
+  lastName  String    @map("last_name")
   crm       String?
   specialty String?
   imgPath   String?   @map("img_path")
@@ -195,7 +200,8 @@ model NursingTechnician {
 
 model Dentist {
   id        String    @id @default(uuid())
-  name      String
+  firstName String    @map("first_name")
+  lastName  String    @map("last_name")
   cro       String?
   imgPath   String?   @map("img_path")
   createdAt DateTime  @default(now()) @map("created_at")
@@ -214,8 +220,10 @@ model Dentist {
 
 model HealthAgent {
   id        String    @id @default(uuid())
-  name      String
+  firstName String    @map("first_name")
+  lastName  String    @map("last_name")
   imgPath   String?   @map("img_path")
+  phone     String?
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 

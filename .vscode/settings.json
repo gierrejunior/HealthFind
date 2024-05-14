@@ -3,4 +3,8 @@
     "source.fixAll.eslint": "explicit",
     "source.addMissingImports": "explicit"
   },
+  "material-icon-theme.activeIconPack": "nest",
+  "material-icon-theme.files.associations": {
+    "*.repository.ts": "database",
+  },
 }
