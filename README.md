@@ -79,6 +79,7 @@ Nest is [MIT licensed](LICENSE).
 yarn prisma studio
 ```
 
+### can login with email or Username
 
 
 # Check list endpoints:
@@ -90,12 +91,12 @@ yarn prisma studio
 - [ ] Get ```baseUrl```/users/:id
 - [ ] Put ```baseUrl```/users/:id
 - [ ] Delete ```baseUrl```/users/:id
-- [ ] Post ```baseUrl```/login
+- [x] Post ```baseUrl```/login
 
 
 ### Health Units:
 
-- [ ] POST ```baseUrl```/health-units
+- [x] POST ```baseUrl```/health-units
 - [ ] GET ```baseUrl```/health-units
 - [ ] GET ```baseUrl```/health-units/:id
 - [ ] PUT ```baseUrl```/health-units/:id

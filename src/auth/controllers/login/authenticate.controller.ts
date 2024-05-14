@@ -4,7 +4,7 @@ import { LoginDTO, loginDTO } from "src/shared/dtos/user/user.dto";
 import { BaseResponse } from "src/shared/interfaces/response.interface";
 import { ZodValidationPipe } from "src/shared/pipes/zod-validation-pipe";
 
-@Controller("/sessions")
+@Controller("/login")
 export class AuthenticateController {
     constructor(private authenticateService: AuthenticateService) {}
 
