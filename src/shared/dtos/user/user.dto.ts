@@ -31,7 +31,7 @@ export const LoginResponseSchema = z.object({
 
 export type LoginResponseDTO = z.infer<typeof LoginResponseSchema>;
 
-export const AuthUserSchema = z.object({
+export const UserSchema = z.object({
     id: z.number(),
     username: userUsernameDTO,
     firstName: userFirstNameDTO,
@@ -39,4 +39,4 @@ export const AuthUserSchema = z.object({
     email: userEmailDTO,
 });
 
-export type AuthUserDTO = z.infer<typeof AuthUserSchema>;
+export type UserDTO = z.infer<typeof UserSchema>;

@@ -1,0 +1,45 @@
+@baseUrl = http://localhost:3333
+@authToken = {{login.response.body.data.accessToken}}
+
+
+# @name registerUser
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+	"username": "JohnDoe",
+	"firstName": "john",
+	"lastName" : "Doe",
+	"email": "johndoe3@gmail.com",
+	"password": "12345678"
+}
+
+###
+
+# @name login
+
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+	"login": "JohnDoe",
+	"password": "12345678"
+}
+
+###
+
+# @name  createHealthUnit
+
+POST {{baseUrl}}/healthunits
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+	"title": "unidade2",
+	"city": "Ananindeua",
+	"state": "PA",
+	"latitude": -100000,
+	"longitude": -99999
+}
+
+###

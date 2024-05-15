@@ -2,7 +2,7 @@ import { Body, Controller, HttpStatus, Post, UseGuards } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { CurrentUser } from "src/auth/current-user-decorator";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
-import { PrismaService } from "src/prisma/prisma.service";
+import { CreateHealthUnitService } from "src/health-unit/services";
 import { TokenDTO } from "src/shared/dtos/auth/token.dto";
 import {
     CreateHealthUnitDTO,
@@ -10,12 +10,12 @@ import {
 } from "src/shared/dtos/health-unit/create-healthUnit.dto";
 import { ZodValidationPipe } from "src/shared/pipes/zod-validation-pipe";
 
-@Controller("/healthunits")
+@Controller("healthunits")
 @UseGuards(JwtAuthGuard)
 export class CreateHealthUnitController {
     constructor(
         private jwt: JwtService,
-        private prisma: PrismaService,
+        private createHealthUnitService: CreateHealthUnitService,
     ) {}
 
     @Post()
@@ -23,14 +23,7 @@ export class CreateHealthUnitController {
         @Body(new ZodValidationPipe(CreateHealthUnitSchema)) data: CreateHealthUnitDTO,
         @CurrentUser() user: TokenDTO,
     ) {
-        const healthUnit = await this.prisma.healthUnit.create({
-            data: {
-                ...data,
-                CreatedBy: {
-                    connect: { id: user.sub },
-                },
-            },
-        });
+        const healthUnit = await this.createHealthUnitService.execute(data, user.sub);
 
         return {
             data: healthUnit,
