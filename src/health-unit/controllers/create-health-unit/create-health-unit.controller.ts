@@ -1,7 +1,7 @@
 import { Body, Controller, HttpStatus, Post, UseGuards } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { CurrentUser } from "src/auth/current-user-decorator";
-import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { JWTGuard } from "src/auth/guard/jwt-auth.guard";
 import { CreateHealthUnitService } from "src/health-unit/services";
 import { TokenDTO } from "src/shared/dtos/auth/token.dto";
 import {
@@ -11,7 +11,7 @@ import {
 import { ZodValidationPipe } from "src/shared/pipes/zod-validation-pipe";
 
 @Controller("healthunits")
-@UseGuards(JwtAuthGuard)
+@UseGuards(JWTGuard)
 export class CreateHealthUnitController {
     constructor(
         private jwt: JwtService,

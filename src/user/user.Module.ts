@@ -7,5 +7,6 @@ import * as UserServices from "./services";
     imports: [PrismaModule],
     controllers: [...Object.values(UserControllers)],
     providers: [...Object.values(UserServices)],
+    exports: [...Object.values(UserServices)],
 })
 export class UserModule {}

@@ -32,11 +32,16 @@ export const LoginResponseSchema = z.object({
 export type LoginResponseDTO = z.infer<typeof LoginResponseSchema>;
 
 export const UserSchema = z.object({
-    id: z.number(),
+    id: z.string(),
     username: userUsernameDTO,
     firstName: userFirstNameDTO,
     lastName: userLastNameDTO,
     email: userEmailDTO,
+    isActive: z.boolean(),
+    role: z.enum(["USER", "STAFF", "ADMIN"]),
+    lastLogin: z.date(),
+    createdAt: z.date(),
+    updatedAt: z.date(),
 });
 
 export type UserDTO = z.infer<typeof UserSchema>;

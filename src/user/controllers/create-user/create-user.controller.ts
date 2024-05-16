@@ -1,23 +1,46 @@
-import { Body, ConflictException, Controller, HttpStatus, Post } from "@nestjs/common";
+import {
+    Body,
+    ConflictException,
+    Controller,
+    ForbiddenException,
+    HttpStatus,
+    Post,
+    Req,
+    UseGuards,
+} from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
 import { hash } from "bcryptjs";
+import { JWTGuard } from "src/auth/guard/jwt-auth.guard";
 import {
     UserRegistrationDTO,
     UserRegistrationSchema,
 } from "src/shared/dtos/user/user.registration.dto";
 import { ZodValidationPipe } from "src/shared/pipes/zod-validation-pipe";
+import { Request } from "../../../shared/interfaces/request.interface";
 import { CreateUserService, GetUserByEmailService, GetUserByUsernameService } from "../../services";
 
 @Controller("users")
+@UseGuards(JWTGuard)
 export class CreateUserController {
     constructor(
+        private jwt: JwtService,
         private getUserByEmailService: GetUserByEmailService,
         private getUserByUsernameService: GetUserByUsernameService,
         private createUserService: CreateUserService,
     ) {}
 
     @Post()
-    async handle(@Body(new ZodValidationPipe(UserRegistrationSchema)) data: UserRegistrationDTO) {
+    async handle(
+        @Body(new ZodValidationPipe(UserRegistrationSchema)) data: UserRegistrationDTO,
+        @Req() request: Request,
+    ) {
         const { username, email, password } = data;
+
+        const requestUserRole = request.user.role;
+
+        if (requestUserRole && requestUserRole == "USER") {
+            throw new ForbiddenException("You do not have permission to create a user");
+        }
 
         const userWithSameEmail = await this.getUserByEmailService.execute(email);
 
@@ -28,7 +51,7 @@ export class CreateUserController {
         const userWithSameUsername = await this.getUserByUsernameService.execute(username);
 
         if (userWithSameUsername) {
-            throw new ConflictException("User with this username already exists");
+            throw new ForbiddenException("User with this username already exists");
         }
 
         data.password = await hash(password, 8);

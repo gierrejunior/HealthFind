@@ -13,6 +13,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  STAFF
+  ADMIN
+}
+
 model User {
   id        String    @id @default(uuid())
   email     String    @unique
@@ -23,6 +29,8 @@ model User {
   lastLogin DateTime? @default(now()) @map("last_login")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
+  role      Role      @default(USER)
+  isActive  Boolean   @default(true) @map("is_active")
 
   createdByHealthUnits       HealthUnit[]        @relation("CreatedBy")
   updatedByHealthUnits       HealthUnit[]        @relation("UpdatedBy")
@@ -71,8 +79,8 @@ model HealthUnit {
   createdById String? @map("created_by_id")
   updatedById String? @map("updated_by_id")
 
-  CreatedBy User? @relation("CreatedBy", fields: [createdById], references: [id])
-  UpdatedBy User? @relation("UpdatedBy", fields: [updatedById], references: [id])
+  CreatedBy User? @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  UpdatedBy User? @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@map("health_units")
 }
@@ -88,8 +96,8 @@ model HealthUnitArea {
   updatedById  String? @map("updated_by_id")
   healthUnitId String  @unique @map("health_unit_id")
 
-  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id])
-  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
+  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
   HealthUnit HealthUnit @relation(fields: [healthUnitId], references: [id])
 
   @@map("health_unit_areas")
@@ -113,8 +121,8 @@ model HealthTeam {
   updatedById  String? @map("updated_by_id")
   healthUnitId String  @map("health_unit_id")
 
-  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id])
-  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
+  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
   healthUnit HealthUnit @relation(fields: [healthUnitId], references: [id])
 
   @@map("health_teams")
@@ -131,8 +139,8 @@ model HealthTeamArea {
   updatedById  String? @map("updated_by_id")
   healthTeamId String  @unique @map("health_team_id")
 
-  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id])
-  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
+  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
   healthTeam HealthTeam @relation(fields: [healthTeamId], references: [id])
 
   @@map("health_team_areas")
@@ -151,8 +159,8 @@ model Nurse {
   updatedById  String? @map("updated_by_id")
   healthTeamId String  @map("health_team_id")
 
-  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id])
-  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
+  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
   healthTeam HealthTeam @relation(fields: [healthTeamId], references: [id])
 
   @@map("nurses")
@@ -172,8 +180,8 @@ model Doctor {
   updatedById  String? @map("updated_by_id")
   healthTeamId String  @map("health_team_id")
 
-  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id])
-  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
+  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
   healthTeam HealthTeam @relation(fields: [healthTeamId], references: [id])
 
   @@map("doctors")
@@ -191,8 +199,8 @@ model NursingTechnician {
   updatedById  String? @map("updated_by_id")
   healthTeamId String  @map("health_team_id")
 
-  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id])
-  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
+  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
   healthTeam HealthTeam @relation(fields: [healthTeamId], references: [id])
 
   @@map("nursing_technicians")
@@ -211,8 +219,8 @@ model Dentist {
   updatedById  String? @map("updated_by_id")
   healthTeamId String  @map("health_team_id")
 
-  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id])
-  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id])
+  CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
   healthTeam HealthTeam @relation(fields: [healthTeamId], references: [id])
 
   @@map("dentists")
@@ -233,8 +241,8 @@ model HealthAgent {
   updatedById  String? @map("updated_by_id")
   healthTeamId String? @map("health_team_id")
 
-  CreatedBy  User?       @relation("CreatedBy", fields: [createdById], references: [id])
-  UpdatedBy  User?       @relation("UpdatedBy", fields: [updatedById], references: [id])
+  CreatedBy  User?       @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  UpdatedBy  User?       @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
   HealthTeam HealthTeam? @relation(fields: [healthTeamId], references: [id])
 
   @@map("health_agents")
@@ -252,8 +260,8 @@ model MicroArea {
   updatedById   String? @map("updated_by_id")
   healthAgentId String  @unique @map("health_agent_id")
 
-  CreatedBy   User?       @relation("CreatedBy", fields: [createdById], references: [id])
-  UpdatedBy   User?       @relation("UpdatedBy", fields: [updatedById], references: [id])
+  CreatedBy   User?       @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  UpdatedBy   User?       @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
   healthAgent HealthAgent @relation(fields: [healthAgentId], references: [id])
 
   @@map("micro_areas")
