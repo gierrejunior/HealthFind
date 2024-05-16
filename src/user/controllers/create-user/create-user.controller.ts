@@ -15,8 +15,8 @@ import {
     UserRegistrationDTO,
     UserRegistrationSchema,
 } from "src/shared/dtos/user/user.registration.dto";
+import { HealthFindRequest } from "src/shared/interfaces/healthFindRequest.interface";
 import { ZodValidationPipe } from "src/shared/pipes/zod-validation-pipe";
-import { Request } from "../../../shared/interfaces/request.interface";
 import { CreateUserService, GetUserByEmailService, GetUserByUsernameService } from "../../services";
 
 @Controller("users")
@@ -32,7 +32,7 @@ export class CreateUserController {
     @Post()
     async handle(
         @Body(new ZodValidationPipe(UserRegistrationSchema)) data: UserRegistrationDTO,
-        @Req() request: Request,
+        @Req() request: HealthFindRequest,
     ) {
         const { username, email, password } = data;
 

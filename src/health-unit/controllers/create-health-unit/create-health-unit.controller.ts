@@ -1,13 +1,12 @@
-import { Body, Controller, HttpStatus, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, HttpStatus, Post, Req, UseGuards } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { CurrentUser } from "src/auth/current-user-decorator";
 import { JWTGuard } from "src/auth/guard/jwt-auth.guard";
 import { CreateHealthUnitService } from "src/health-unit/services";
-import { TokenDTO } from "src/shared/dtos/auth/token.dto";
 import {
     CreateHealthUnitDTO,
     CreateHealthUnitSchema,
-} from "src/shared/dtos/health-unit/create-healthUnit.dto";
+} from "src/shared/dtos/health-unit/create-healthUnit/create-healthUnit.dto";
+import { HealthFindRequest } from "src/shared/interfaces/healthFindRequest.interface";
 import { ZodValidationPipe } from "src/shared/pipes/zod-validation-pipe";
 
 @Controller("healthunits")
@@ -21,9 +20,9 @@ export class CreateHealthUnitController {
     @Post()
     async handle(
         @Body(new ZodValidationPipe(CreateHealthUnitSchema)) data: CreateHealthUnitDTO,
-        @CurrentUser() user: TokenDTO,
+        @Req() request: HealthFindRequest,
     ) {
-        const healthUnit = await this.createHealthUnitService.execute(data, user.sub);
+        const healthUnit = await this.createHealthUnitService.execute(data, request.user.id);
 
         return {
             data: healthUnit,
