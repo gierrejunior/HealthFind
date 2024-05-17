@@ -1,26 +1,21 @@
-import { Config } from "jest";
-
-const config: Config = {
+module.exports = {
+    moduleFileExtensions: ["js", "json", "ts"],
+    rootDir: "src",
+    testRegex: ".*\\.spec\\.ts$",
     transform: {
-        "^.+\\.(t|j)s?$": "@swc/jest",
+        "^.+\\.(t|j)s$": [
+            "ts-jest",
+            {
+                tsconfig: {
+                    target: "es5",
+                    module: "commonjs",
+                    // ... outras opções do tsconfig que você deseja incluir
+                },
+            },
+        ],
     },
-    moduleNameMapper: {
-        "@app/shared/(.*)": "<rootDir>/libs/shared/src/$1",
-        "@app/shared": "<rootDir>/libs/shared/src",
-        "@apps/fieldscan/(.*)": "<rootDir>/apps/fieldscan/src/$1",
-    },
+    collectCoverageFrom: ["**/*.(t|j)s"],
+    coverageDirectory: "../coverage",
+    testEnvironment: "node",
     setupFilesAfterEnv: ["jest-extended/all"],
-    coverageProvider: "v8",
-    collectCoverageFrom: [
-        "apps/fieldscan/src/**/*.ts",
-        "libs/shared/src/**/*.ts",
-        "!**/*.interface.ts",
-        "!**/*.dto.ts",
-        "!**/*.module.ts",
-        "!**/prisma.repository.ts",
-        "!**/*.enum.ts",
-    ],
-    clearMocks: true,
 };
-
-export default config;

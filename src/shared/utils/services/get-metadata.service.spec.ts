@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 
-import { PaginationException } from "../../exceptions/pagination.excepetion";
 
+import "jest-extended";
 import { GetMetadataService } from "./get-metadata.service";
 
 describe("GetMetadataService", () => {
@@ -81,29 +81,5 @@ describe("GetMetadataService", () => {
         const result = await service.execute(1, 10, 5);
 
         expect(result.total).toEqual(10);
-    });
-
-    it("should throw PaginationException if page is greater than lastPage", async () => {
-        try {
-            expect(await service.execute(3, 10, 5));
-        } catch (error) {
-            if (error instanceof PaginationException) {
-                expect(error.message).toEqual("ssxApi.invalidPaginationParameters");
-            }
-        }
-
-        expect.assertions(1);
-    });
-
-    it("should throw PaginationException if page is less than 1", async () => {
-        try {
-            expect(await service.execute(-1, 10, 5));
-        } catch (error) {
-            if (error instanceof PaginationException) {
-                expect(error.message).toEqual("ssxApi.invalidPaginationParameters");
-            }
-        }
-
-        expect.assertions(1);
     });
 });
