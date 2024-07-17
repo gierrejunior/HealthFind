@@ -9,7 +9,6 @@ module.exports = {
                 tsconfig: {
                     target: "es5",
                     module: "commonjs",
-                    // ... outras opções do tsconfig que você deseja incluir
                 },
             },
         ],
