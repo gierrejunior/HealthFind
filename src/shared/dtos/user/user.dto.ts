@@ -33,15 +33,15 @@ export type LoginResponseDTO = z.infer<typeof LoginResponseSchema>;
 
 export const UserSchema = z.object({
     id: z.string(),
-    username: userUsernameDTO,
-    firstName: userFirstNameDTO,
-    lastName: userLastNameDTO,
-    email: userEmailDTO,
+    username: z.string(),
+    firstName: z.string(),
+    lastName: z.string(),
+    email: z.string().email(),
     isActive: z.boolean(),
     role: z.enum(["USER", "STAFF", "ADMIN"]),
-    lastLogin: z.date(),
+    lastLogin: z.date().nullable(), // Altera para aceitar null
     createdAt: z.date(),
-    updatedAt: z.date(),
+    updatedAt: z.date().nullable(), // Altera para aceitar null
 });
 
 export type UserDTO = z.infer<typeof UserSchema>;

@@ -12,3 +12,5 @@ export class CreateUserService implements Service {
         return await this.prisma.user.create({ data: user });
     }
 }
+
+
