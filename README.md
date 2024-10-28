@@ -87,20 +87,20 @@ yarn prisma studio
 ### User
 
 - [x] Post ```baseUrl```/registration
-- [ ] Get ```baseUrl```/users
-- [ ] Get ```baseUrl```/users/:id
-- [ ] Put ```baseUrl```/users/:id
-- [ ] Delete ```baseUrl```/users/:id
+- [x] Get ```baseUrl```/users
+- [x] Get ```baseUrl```/users/:id
+- [x] Put ```baseUrl```/users/:id
+- [x] Delete ```baseUrl```/users/:id
 - [x] Post ```baseUrl```/login
 
 
 ### Health Units:
 
 - [x] POST ```baseUrl```/health-units
-- [ ] GET ```baseUrl```/health-units
-- [ ] GET ```baseUrl```/health-units/:id
+- [x] GET ```baseUrl```/health-units
+- [x] GET ```baseUrl```/health-units/:id
 - [ ] PUT ```baseUrl```/health-units/:id
-- [ ] DELETE ```baseUrl```/health-units/:id
+- [x] DELETE ```baseUrl```/health-units/:id
   
 ### Health Areas:
 

@@ -1,10 +1,10 @@
 import {
-  Controller,
-  Delete,
-  HttpStatus,
-  NotFoundException,
-  Param,
-  UseGuards,
+    Controller,
+    Delete,
+    HttpStatus,
+    NotFoundException,
+    Param,
+    UseGuards,
 } from "@nestjs/common";
 import { JWTGuard } from "src/auth/guard/jwt-auth.guard";
 import { CheckAbilities } from "src/casl/check-abilities.decorator";

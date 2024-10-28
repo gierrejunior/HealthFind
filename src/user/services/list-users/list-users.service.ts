@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
+import { Role, User } from "@prisma/client"; // Importa o Role para tipagem
 import { PrismaService } from "src/prisma/prisma.service";
-import { User, Role } from "@prisma/client"; // Importa o Role para tipagem
 
 @Injectable()
 export class ListUsersService {
@@ -10,7 +10,9 @@ export class ListUsersService {
         page: number, 
         limit: number, 
         role?: Role, // Define que role deve ser do tipo Role
-        isActive?: boolean
+        isActive?: boolean,
+        orderBy?: string, // Adiciona orderBy
+        sortOrder?: 'asc' | 'desc' // Adiciona sortOrder
     ): Promise<{ users: User[]; count: number }> {
         const skip = (page - 1) * limit;
 
@@ -24,6 +26,7 @@ export class ListUsersService {
                 skip,
                 take: limit,
                 where: whereConditions,
+                orderBy: orderBy ? { [orderBy]: sortOrder || 'asc' } : undefined, // Implementa a ordenação
             }),
             this.prisma.user.count({
                 where: whereConditions,

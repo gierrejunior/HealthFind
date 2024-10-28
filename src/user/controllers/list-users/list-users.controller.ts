@@ -22,11 +22,21 @@ export class ListUsersController {
         @Query(new ZodValidationPipe(PaginationSchema)) query: { page: number; limit: number },
         @Query("role") role?: Role,
         @Query("isActive") isActive?: string,
+        @Query("orderBy") orderBy?: string, // Adiciona orderBy
+        @Query("sortOrder") sortOrder?: 'asc' | 'desc' // Adiciona sortOrder
     ): Promise<PaginatedUsersResponseDTO> {
         const { page, limit } = query;
         const isActiveBoolean = isActive === "true" ? true : isActive === "false" ? false : undefined;
 
-        const { users, count } = await this.listUsersService.execute(page, limit, role, isActiveBoolean);
+        const { users, count } = await this.listUsersService.execute(
+            page,
+            limit,
+            role,
+            isActiveBoolean,
+            orderBy,   // Passa orderBy
+            sortOrder   // Passa sortOrder
+        );
+
         const metadata = await this.getMetadataService.execute(page, count, limit);
 
         // Remove o campo password de cada usuário

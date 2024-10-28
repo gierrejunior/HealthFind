@@ -1,3 +1,5 @@
-export * from "./create-health-unit/create-health-unit.controller";
-export * from "./get-health-unit/get-healthUnit.controller";
+export * from "./create-healthUnit/create-healthUnit.controller";
+export * from "./get-healthUnity-by-id/get-healthUnit-by-id.controller";
+export * from "./list-healthUnit/list-healthUnit.controller";
+export * from "./delete-healthUnit/delete-healthUnit.controller"
 
