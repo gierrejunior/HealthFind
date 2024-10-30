@@ -21,8 +21,10 @@ CREATE TABLE "users" (
 -- CreateTable
 CREATE TABLE "health_units" (
     "id" TEXT NOT NULL,
+    "unitType" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT,
+    "cnes" TEXT,
     "address" TEXT,
     "cep" TEXT,
     "phone" TEXT,
@@ -183,6 +185,9 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "health_units_cnes_key" ON "health_units"("cnes");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "health_unit_areas_health_unit_id_key" ON "health_unit_areas"("health_unit_id");

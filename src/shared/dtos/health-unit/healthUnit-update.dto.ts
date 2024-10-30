@@ -1,8 +1,7 @@
 import Decimal from "decimal.js";
 import { z } from "zod";
 
-export const HealthUnitSchema = z.object({
-    id: z.string(),
+export const HealthUnitUpdateSchema = z.object({
     unitType: z.string(),
     title: z.string(),
     description: z.string().nullable(),
@@ -19,4 +18,4 @@ export const HealthUnitSchema = z.object({
     imgPath: z.string().nullable(),
 });
 
-export type HealthUnitDTO = z.infer<typeof HealthUnitSchema>;
+export type HealthUnitUpdateDTO = z.infer<typeof HealthUnitUpdateSchema>;

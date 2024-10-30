@@ -19,14 +19,22 @@ export class GetUserFromTokenService implements Service {
         // Supondo que o token venha no formato 'Bearer [token]'
         const [, tokenHash] = token.split(" ");
 
+        // Verifica e decodifica o token JWT
+        let decoded;
         try {
-            const decoded = await this.jwtService.verifyAsync(tokenHash);
-
-            const user = await this.getUserByIdService.execute(decoded.sub);
-
-            return UserSchema.parse(user);
-        } catch (error) {
-            throw new UnauthorizedException("auth.error.invalid_token");
+            decoded = await this.jwtService.verifyAsync(tokenHash);
+        } catch {
+            throw new UnauthorizedException("auth.error.invalid_or_expired_token");
         }
+
+        // Busca o usuário no banco de dados pelo ID do token decodificado
+        const user = await this.getUserByIdService.execute(decoded.sub);
+
+        if (!user) {
+            throw new UnauthorizedException("auth.error.user_not_found");
+        }
+
+        // Valida e retorna o objeto com base no UserSchema
+        return UserSchema.parse(user);
     }
 }

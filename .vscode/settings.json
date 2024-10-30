@@ -1,10 +1,32 @@
 {
+  "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
-    "source.addMissingImports": "explicit"
+    "source.fixAll.eslint": "always", // Corrige automaticamente com ESLint
+    "source.addMissingImports": "always" // Adiciona imports ausentes automaticamente
   },
+  "eslint.alwaysShowStatus": true, // Mostra o status do ESLint no editor
+  "prettier.requireConfig": true, // Garante que o Prettier siga as configurações do projeto
+  // Configurações do tema de ícones
   "material-icon-theme.activeIconPack": "nest",
   "material-icon-theme.files.associations": {
-    "*.repository.ts": "database",
+    "*.repository.ts": "database"
   },
+  // Configurações adicionais para o Prettier
+  "prettier.printWidth": 100,
+  "prettier.tabWidth": 4,
+  "prettier.singleQuote": false,
+  "prettier.trailingComma": "all",
+  "prettier.arrowParens": "always",
+  "prettier.semi": true,
+  "prettier.endOfLine": "auto",
+  // Ignora arquivos e pastas desnecessárias para o ESLint
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ],
+  "files.exclude": {
+    "node_modules": true,
+    "dist": true
+  }
 }

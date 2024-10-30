@@ -7,12 +7,12 @@ export class ListUsersService {
     constructor(private prisma: PrismaService) {}
 
     async execute(
-        page: number, 
-        limit: number, 
+        page: number,
+        limit: number,
         role?: Role, // Define que role deve ser do tipo Role
         isActive?: boolean,
         orderBy?: string, // Adiciona orderBy
-        sortOrder?: 'asc' | 'desc' // Adiciona sortOrder
+        sortOrder?: "asc" | "desc", // Adiciona sortOrder
     ): Promise<{ users: User[]; count: number }> {
         const skip = (page - 1) * limit;
 
@@ -26,7 +26,7 @@ export class ListUsersService {
                 skip,
                 take: limit,
                 where: whereConditions,
-                orderBy: orderBy ? { [orderBy]: sortOrder || 'asc' } : undefined, // Implementa a ordenação
+                orderBy: orderBy ? { [orderBy]: sortOrder || "asc" } : undefined, // Implementa a ordenação
             }),
             this.prisma.user.count({
                 where: whereConditions,

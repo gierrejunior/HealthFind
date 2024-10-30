@@ -32,8 +32,10 @@ async function main() {
     // Cria Unidades de Saúde
     const healthUnit1 = await prisma.healthUnit.create({
         data: {
+            unitType: "UBS",
             title: "Health Unit 1",
             description: "Main Health Unit",
+            cnes: "1234567",
             address: "123 Health St",
             cep: "12345-678",
             phone: "(11) 1234-5678",
@@ -50,8 +52,10 @@ async function main() {
 
     const healthUnit2 = await prisma.healthUnit.create({
         data: {
+            unitType: "USF",
             title: "Health Unit 2",
             description: "Secondary Health Unit",
+            cnes: "7654321",
             address: "456 Health Ave",
             cep: "87654-321",
             phone: "(11) 8765-4321",

@@ -52,14 +52,17 @@ model User {
   updatedByHealthAgent       HealthAgent[]       @relation("UpdatedBy")
   createdByMicroArea         MicroArea[]         @relation("CreatedBy")
   updatedByMicroArea         MicroArea[]         @relation("UpdatedBy")
+  AuditLog                   AuditLog[]
 
   @@map("users")
 }
 
 model HealthUnit {
   id          String    @id @default(uuid())
+  unitType    String
   title       String
   description String?
+  cnes        String?   @unique
   address     String?
   cep         String?
   phone       String?
@@ -265,4 +268,26 @@ model MicroArea {
   healthAgent HealthAgent @relation(fields: [healthAgentId], references: [id])
 
   @@map("micro_areas")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  entityId   String // ID da entidade afetada
+  entityType String // Tipo da entidade, como "User", "HealthUnit", etc.
+  action     Action // Tipo de ação: "CREATE", "UPDATE", ou "DELETE"
+  userId     String? // ID do usuário que realizou a ação (opcional para aceitar SetNull)
+  oldData    Json? // Dados antigos (opcional para "CREATE")
+  newData    Json? // Dados novos (opcional para "DELETE")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relacionamento com o modelo User para referenciar o usuário que fez a ação
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("audit_logs")
+}
+
+enum Action {
+  CREATE
+  UPDATE
+  DELETE
 }

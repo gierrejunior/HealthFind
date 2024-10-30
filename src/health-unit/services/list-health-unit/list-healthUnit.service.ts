@@ -13,8 +13,9 @@ export class ListHealthUnitService {
         description?: string,
         city?: string,
         state?: string,
+        unitTypes?: string[], // Adiciona unitTypes como um parâmetro opcional
         orderBy?: string,
-        sortOrder?: 'asc' | 'desc'
+        sortOrder?: "asc" | "desc",
     ): Promise<{ healthUnits: HealthUnit[]; count: number }> {
         const skip = (page - 1) * limit;
 
@@ -23,7 +24,7 @@ export class ListHealthUnitService {
             ...(title && {
                 title: {
                     contains: title,
-                    mode: "insensitive", // busca não sensível a maiúsculas e minúsculas
+                    mode: "insensitive",
                 },
             }),
             ...(description && {
@@ -34,6 +35,7 @@ export class ListHealthUnitService {
             }),
             ...(city && { city }),
             ...(state && { state }),
+            ...(unitTypes && { unitType: { in: unitTypes } }), // Filtra por unitTypes, se fornecido
         };
 
         // Realiza a busca no banco de dados com as condições fornecidas
@@ -41,7 +43,7 @@ export class ListHealthUnitService {
             where: searchConditions,
             skip,
             take: limit,
-            orderBy: orderBy ? { [orderBy]: sortOrder || 'asc' } : undefined,
+            orderBy: orderBy ? { [orderBy]: sortOrder || "asc" } : undefined,
         });
 
         // Conta o total de resultados encontrados
