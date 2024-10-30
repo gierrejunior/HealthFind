@@ -99,7 +99,7 @@ yarn prisma studio
 - [x] POST ```baseUrl```/health-units
 - [x] GET ```baseUrl```/health-units
 - [x] GET ```baseUrl```/health-units/:id
-- [ ] PUT ```baseUrl```/health-units/:id
+- [x] PUT ```baseUrl```/health-units/:id
 - [x] DELETE ```baseUrl```/health-units/:id
   
 ### Health Areas:
