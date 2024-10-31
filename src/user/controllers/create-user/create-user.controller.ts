@@ -2,12 +2,12 @@ import {
     Body,
     ConflictException,
     Controller,
+    ForbiddenException,
     HttpStatus,
     Post,
     Req,
     UseGuards,
 } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
 import { Role } from "@prisma/client";
 import { hash } from "bcryptjs";
 import { JWTGuard } from "src/auth/guard/jwt-auth.guard";
@@ -19,16 +19,21 @@ import {
 } from "src/shared/dtos/user/user.registration.dto";
 import { HealthFindRequest } from "src/shared/interfaces/healthFindRequest.interface";
 import { ZodValidationPipe } from "src/shared/pipes/zod-validation-pipe";
-import { CreateUserService, GetUserByEmailService, GetUserByUsernameService } from "../../services";
+import {
+    CreateUserService,
+    GetUserByEmailService,
+    GetUserByUsernameService,
+    ValidateCityService,
+} from "../../services";
 
 @Controller("users")
 @UseGuards(JWTGuard, CaslAbilityGuard)
 export class CreateUserController {
     constructor(
-        private jwt: JwtService,
         private getUserByEmailService: GetUserByEmailService,
         private getUserByUsernameService: GetUserByUsernameService,
         private createUserService: CreateUserService,
+        private validateCityService: ValidateCityService,
     ) {}
 
     @Post()
@@ -37,7 +42,7 @@ export class CreateUserController {
         @Body(new ZodValidationPipe(UserRegistrationSchema)) data: UserRegistrationDTO,
         @Req() request: HealthFindRequest,
     ) {
-        const { username, email, password } = data;
+        const { username, email, password, role, cityId } = data;
 
         // Verifica se o e-mail ou username já existem
         const userWithSameEmail = await this.getUserByEmailService.execute(email);
@@ -50,25 +55,33 @@ export class CreateUserController {
             throw new ConflictException("User with this username already exists");
         }
 
-        // Define o cityId com base no papel do usuário solicitante
+        // Valida o cityId e o papel conforme o papel do usuário solicitante
         if (request.user.role === Role.STAFF) {
-            // STAFF atribui seu próprio cityId ao novo USER
-            data.cityId = request.user.cityId;
+            if (role !== Role.USER && role !== Role.STAFF) {
+                throw new ForbiddenException("STAFF can only assign USER or STAFF roles");
+            }
+            data.cityId = request.user.cityId; // STAFF atribui seu próprio cityId ao novo USER
+        } else if (request.user.role === Role.ADMIN) {
+            if (role !== Role.ADMIN && !cityId) {
+                throw new ForbiddenException(
+                    "ADMIN must provide a cityId when creating a USER or STAFF",
+                );
+            }
+            if (role !== Role.ADMIN) {
+                await this.validateCityService.execute(cityId as string); // Valida o cityId fornecido pelo ADMIN
+            }
         } else if (request.user.role === Role.USER) {
-            throw new ConflictException("Users cannot create new accounts");
+            throw new ForbiddenException("Users cannot create new accounts");
         }
 
         // Hash da senha
         data.password = await hash(password, 8);
 
-        // Chama o serviço para criar o usuário e passa o ID do usuário que está realizando a ação para auditoria
+        // Criação do usuário com auditoria do ID do criador
         const user = await this.createUserService.execute(data, request.user.id);
 
-        // Remove a senha do objeto de retorno usando desestruturação
-        const userWithoutPassword = {
-            ...user,
-            password: undefined,
-        };
+        // Remove a senha do retorno
+        const userWithoutPassword = { ...user, password: undefined };
 
         return {
             data: userWithoutPassword,

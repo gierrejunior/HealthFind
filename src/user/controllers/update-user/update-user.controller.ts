@@ -1,4 +1,14 @@
-import { Body, Controller, HttpStatus, Param, Put, Req, UseGuards } from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    HttpStatus,
+    Param,
+    Put,
+    Req,
+    UnauthorizedException,
+    UseGuards,
+} from "@nestjs/common";
+import { Role } from "@prisma/client";
 import { JWTGuard } from "src/auth/guard/jwt-auth.guard";
 import { AuthRequest } from "src/auth/interfaces/auth-request.interface";
 import { CaslAbilityGuard } from "src/casl/casl-ability.guard";
@@ -13,16 +23,37 @@ export class UpdateUserController {
     constructor(private updateUserService: UpdateUserService) {}
 
     @Put(":id")
-    @CheckAbilities(["update", "User"]) // Verifica se o usuário tem permissão para atualizar
+    @CheckAbilities(["update", "User"])
     async handle(
         @Param("id") id: string,
         @Body(new ZodValidationPipe(UserUpdateSchema)) data: UserUpdateDTO,
-        @Req() req: AuthRequest, // Acessa o usuário autenticado
+        @Req() req: AuthRequest,
     ) {
-        const userId = req.user.id; // Obtém o ID do usuário autenticado
+        const requester = req.user;
+
+        // Verifica se o usuário a ser atualizado é o próprio usuário
+        if (requester.role === Role.USER && requester.id !== id) {
+            throw new UnauthorizedException("Users can only update their own information.");
+        }
+
+        // Se STAFF, impede a atualização do cityId e restringe os roles
+        if (requester.role === Role.STAFF) {
+            if (data.cityId) {
+                throw new UnauthorizedException("STAFF cannot change cityId.");
+            }
+            if (data.role === Role.ADMIN) {
+                throw new UnauthorizedException("STAFF cannot change role to ADMIN.");
+            }
+            // Permite mudar para STAFF, mas não para ADMIN
+        }
+
+        // Impede o USER de mudar seu papel
+        if (data.role) {
+            throw new UnauthorizedException("Users cannot change their role.");
+        }
 
         // Chama o serviço para atualizar o usuário
-        const updatedUser = await this.updateUserService.execute(id, data, userId);
+        const updatedUser = await this.updateUserService.execute(id, data, requester.id);
 
         const userWithoutPassword = {
             ...updatedUser,

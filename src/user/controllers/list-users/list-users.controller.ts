@@ -32,14 +32,17 @@ export class ListUsersController {
         const isActiveBoolean =
             isActive === "true" ? true : isActive === "false" ? false : undefined;
 
-        // Filtra pela cidade se o usuário não for ADMIN
+        // Filtra pela cidade se o usuário não for ADMIN, convertendo null para undefined
         const cityId = req.user.role !== Role.ADMIN ? (req.user.cityId ?? undefined) : undefined;
+
+        // Define `isActive` padrão para USER, exibe tanto ativos quanto inativos para STAFF e ADMIN
+        const finalIsActive = req.user.role === Role.USER ? true : isActiveBoolean;
 
         const { users, count } = await this.listUsersService.execute(
             page,
             limit,
             role,
-            isActiveBoolean,
+            finalIsActive,
             orderBy,
             sortOrder,
             cityId,
@@ -52,7 +55,7 @@ export class ListUsersController {
             data: users.map((user) => ({
                 ...user,
                 password: undefined,
-                cityId: user.cityId || undefined, // Converte null para undefined para corresponder ao tipo esperado
+                cityId: user.cityId || undefined,
             })),
             message: "users.list.success",
             meta: metadata,

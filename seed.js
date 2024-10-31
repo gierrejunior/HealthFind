@@ -10,11 +10,11 @@ async function main() {
         where: { email: "johndoe@example.com" },
         update: {},
         create: {
-            username: "johndoe",
-            firstName: "John",
+            username: "admin",
+            firstName: "admin",
             lastName: "Doe",
-            email: "johndoe@example.com",
-            password: await hashPassword("password123"),
+            email: "admin@example.com",
+            password: await hashPassword("admin123"),
             role: "ADMIN",
         },
     });
@@ -212,12 +212,12 @@ async function main() {
         where: { email: "janedoe@example.com" },
         update: {},
         create: {
-            username: "janedoe",
-            firstName: "Jane",
+            username: "staffcity1",
+            firstName: "staffcity1",
             lastName: "Doe",
-            email: "janedoe@example.com",
-            password: await hashPassword("password456"),
-            role: "USER",
+            email: "staffcity1@example.com",
+            password: await hashPassword("staffcity1"),
+            role: "STAFF",
             cityId: city1.id,
         },
     });
@@ -226,13 +226,37 @@ async function main() {
         where: { email: "janedoe@example.com" },
         update: {},
         create: {
-            username: "janedoe2",
-            firstName: "Jane2",
+            username: "staffcity2",
+            firstName: "staffcity2",
             lastName: "Doe2",
-            email: "janedoe2@example.com",
-            password: await hashPassword("password456"),
+            email: "staffcity2@example.com",
+            password: await hashPassword("staffcity2"),
             role: "STAFF",
+            cityId: city2.id,
+        },
+    });
+
+    const userCity1 = await prisma.user.create({
+        data: {
+            username: "usercity1",
+            firstName: "User",
+            lastName: "City1",
+            email: "usercity1@example.com",
+            password: await hashPassword("usercity1"),
+            role: "USER",
             cityId: city1.id,
+        },
+    });
+
+    const userCity2 = await prisma.user.create({
+        data: {
+            username: "usercity2",
+            firstName: "User",
+            lastName: "City2",
+            email: "usercity2@example.com",
+            password: await hashPassword("usercity2"),
+            role: "USER",
+            cityId: city2.id,
         },
     });
 
