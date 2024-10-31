@@ -1,6 +1,9 @@
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('USER', 'STAFF', 'ADMIN');
 
+-- CreateEnum
+CREATE TYPE "Action" AS ENUM ('CREATE', 'UPDATE', 'DELETE');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
@@ -14,8 +17,21 @@ CREATE TABLE "users" (
     "updated_at" TIMESTAMP(3),
     "role" "Role" NOT NULL DEFAULT 'USER',
     "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "cityId" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "cities" (
+    "id" TEXT NOT NULL,
+    "city" TEXT NOT NULL,
+    "uf" TEXT NOT NULL,
+    "geojson" JSONB NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "cities_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -25,11 +41,10 @@ CREATE TABLE "health_units" (
     "title" TEXT NOT NULL,
     "description" TEXT,
     "cnes" TEXT,
+    "cityId" TEXT NOT NULL,
     "address" TEXT,
     "cep" TEXT,
     "phone" TEXT,
-    "city" TEXT NOT NULL,
-    "state" TEXT NOT NULL,
     "manager" TEXT,
     "email" TEXT,
     "latitude" DECIMAL(65,30) NOT NULL,
@@ -180,6 +195,20 @@ CREATE TABLE "micro_areas" (
     CONSTRAINT "micro_areas_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "audit_logs" (
+    "id" TEXT NOT NULL,
+    "entityId" TEXT NOT NULL,
+    "entityType" TEXT NOT NULL,
+    "action" "Action" NOT NULL,
+    "userId" TEXT,
+    "oldData" JSONB,
+    "newData" JSONB,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "audit_logs_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -195,8 +224,11 @@ CREATE UNIQUE INDEX "health_unit_areas_health_unit_id_key" ON "health_unit_areas
 -- CreateIndex
 CREATE UNIQUE INDEX "health_team_areas_health_team_id_key" ON "health_team_areas"("health_team_id");
 
--- CreateIndex
-CREATE UNIQUE INDEX "micro_areas_health_agent_id_key" ON "micro_areas"("health_agent_id");
+-- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "users_cityId_fkey" FOREIGN KEY ("cityId") REFERENCES "cities"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "health_units" ADD CONSTRAINT "health_units_cityId_fkey" FOREIGN KEY ("cityId") REFERENCES "cities"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "health_units" ADD CONSTRAINT "health_units_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -284,3 +316,6 @@ ALTER TABLE "micro_areas" ADD CONSTRAINT "micro_areas_updated_by_id_fkey" FOREIG
 
 -- AddForeignKey
 ALTER TABLE "micro_areas" ADD CONSTRAINT "micro_areas_health_agent_id_fkey" FOREIGN KEY ("health_agent_id") REFERENCES "health_agents"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;

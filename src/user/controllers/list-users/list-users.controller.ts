@@ -1,6 +1,7 @@
-import { Controller, Get, HttpStatus, Query, UseGuards } from "@nestjs/common";
+import { Controller, Get, HttpStatus, Query, Req, UseGuards } from "@nestjs/common";
 import { Role } from "@prisma/client";
 import { JWTGuard } from "src/auth/guard/jwt-auth.guard";
+import { AuthRequest } from "src/auth/interfaces/auth-request.interface";
 import { CaslAbilityGuard } from "src/casl/casl-ability.guard";
 import { CheckAbilities } from "src/casl/check-abilities.decorator";
 import { PaginationSchema } from "src/shared/dtos/pagination/pagination.dto";
@@ -20,6 +21,7 @@ export class ListUsersController {
     @Get()
     @CheckAbilities(["read", "User"])
     async handle(
+        @Req() req: AuthRequest,
         @Query(new ZodValidationPipe(PaginationSchema)) query: { page: number; limit: number },
         @Query("role") role?: Role,
         @Query("isActive") isActive?: string,
@@ -30,6 +32,9 @@ export class ListUsersController {
         const isActiveBoolean =
             isActive === "true" ? true : isActive === "false" ? false : undefined;
 
+        // Filtra pela cidade se o usuário não for ADMIN
+        const cityId = req.user.role !== Role.ADMIN ? (req.user.cityId ?? undefined) : undefined;
+
         const { users, count } = await this.listUsersService.execute(
             page,
             limit,
@@ -37,6 +42,8 @@ export class ListUsersController {
             isActiveBoolean,
             orderBy,
             sortOrder,
+            cityId,
+            req.user.role,
         );
 
         const metadata = await this.getMetadataService.execute(page, count, limit);
@@ -44,7 +51,8 @@ export class ListUsersController {
         return {
             data: users.map((user) => ({
                 ...user,
-                password: undefined, // Remove o campo password da resposta
+                password: undefined,
+                cityId: user.cityId || undefined, // Converte null para undefined para corresponder ao tipo esperado
             })),
             message: "users.list.success",
             meta: metadata,

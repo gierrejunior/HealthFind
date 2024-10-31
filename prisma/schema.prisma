@@ -31,7 +31,9 @@ model User {
   updatedAt DateTime? @updatedAt @map("updated_at")
   role      Role      @default(USER)
   isActive  Boolean   @default(true) @map("is_active")
+  cityId    String?
 
+  city City? @relation(fields: [cityId], references: [id])
   createdByHealthUnits       HealthUnit[]        @relation("CreatedBy")
   updatedByHealthUnits       HealthUnit[]        @relation("UpdatedBy")
   createdByHealthUnitArea    HealthUnitArea[]    @relation("CreatedBy")
@@ -57,17 +59,29 @@ model User {
   @@map("users")
 }
 
+model City {
+  id          String       @id @default(uuid())
+  city        String
+  uf          String
+  geojson     Json // Geometria do município para delimitações geográficas
+  healthUnits HealthUnit[]
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  User        User[]
+
+  @@map("cities")
+}
+
 model HealthUnit {
   id          String    @id @default(uuid())
   unitType    String
   title       String
   description String?
   cnes        String?   @unique
+  cityId      String
   address     String?
   cep         String?
   phone       String?
-  city        String
-  state       String
   manager     String?
   email       String?
   latitude    Decimal
@@ -76,6 +90,7 @@ model HealthUnit {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime? @updatedAt @map("updated_at")
 
+  City           City            @relation(fields: [cityId], references: [id])
   healthUnitArea HealthUnitArea?
   healthTeams    HealthTeam[]
 
@@ -101,7 +116,7 @@ model HealthUnitArea {
 
   CreatedBy  User?      @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   UpdatedBy  User?      @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
-  HealthUnit HealthUnit @relation(fields: [healthUnitId], references: [id])
+  healthUnit HealthUnit @relation(fields: [healthUnitId], references: [id])
 
   @@map("health_unit_areas")
 }
@@ -238,7 +253,7 @@ model HealthAgent {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
-  MicroArea MicroArea?
+  MicroAreas MicroArea[] // Permite várias `MicroAreas` para um `HealthAgent`
 
   createdById  String? @map("created_by_id")
   updatedById  String? @map("updated_by_id")
@@ -246,7 +261,7 @@ model HealthAgent {
 
   CreatedBy  User?       @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   UpdatedBy  User?       @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
-  HealthTeam HealthTeam? @relation(fields: [healthTeamId], references: [id])
+  healthTeam HealthTeam? @relation(fields: [healthTeamId], references: [id])
 
   @@map("health_agents")
 }
@@ -261,7 +276,7 @@ model MicroArea {
 
   createdById   String? @map("created_by_id")
   updatedById   String? @map("updated_by_id")
-  healthAgentId String  @unique @map("health_agent_id")
+  healthAgentId String  @map("health_agent_id") // Remova @unique aqui
 
   CreatedBy   User?       @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   UpdatedBy   User?       @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)

@@ -1,21 +1,38 @@
-import { Controller, Get, HttpStatus, NotFoundException, Param, UseGuards } from "@nestjs/common";
+import {
+    Controller,
+    Get,
+    HttpStatus,
+    NotFoundException,
+    Param,
+    Request,
+    UnauthorizedException,
+    UseGuards,
+} from "@nestjs/common";
 import { JWTGuard } from "src/auth/guard/jwt-auth.guard";
+import { AuthRequest } from "src/auth/interfaces/auth-request.interface";
 import { CaslAbilityGuard } from "src/casl/casl-ability.guard";
 import { CheckAbilities } from "src/casl/check-abilities.decorator";
 import { GetUserByIdService } from "../../services";
 
 @Controller("users")
-@UseGuards(JWTGuard, CaslAbilityGuard) // Adiciona o guard de habilidades
+@UseGuards(JWTGuard, CaslAbilityGuard)
 export class GetUserByIdController {
     constructor(private getUserByIdService: GetUserByIdService) {}
 
     @Get(":id")
-    @CheckAbilities(["read", "User"]) // Verifica se o usuário tem permissão para ler
-    async handle(@Param("id") id: string) {
+    @CheckAbilities(["read", "User"])
+    async handle(@Param("id") id: string, @Request() req: AuthRequest) {
+        const requester = req.user;
+
         const user = await this.getUserByIdService.execute(id);
 
         if (!user) {
             throw new NotFoundException("User not found");
+        }
+
+        // Verifica se o usuário tem permissão para acessar informações de outra cidade
+        if (requester.role !== "ADMIN" && user.cityId !== requester.cityId) {
+            throw new UnauthorizedException("You do not have permission to access this user.");
         }
 
         const userWithoutPassword = {

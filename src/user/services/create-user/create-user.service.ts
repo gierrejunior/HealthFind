@@ -13,8 +13,15 @@ export class CreateUserService implements Service {
     ) {}
 
     async execute(user: UserRegistrationDTO, createdById: string): Promise<User> {
+        // Sanitiza o objeto `user`, convertendo `null` em `undefined` para campos opcionais
+        const sanitizedUser = {
+            ...user,
+            role: user.role ?? undefined,
+            cityId: user.cityId ?? undefined,
+        };
+
         // Cria o usuário
-        const newUser = await this.prisma.user.create({ data: user });
+        const newUser = await this.prisma.user.create({ data: sanitizedUser });
 
         // Registra o log de auditoria
         await this.auditLogService.logAction(

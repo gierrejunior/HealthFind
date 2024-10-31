@@ -1,5 +1,6 @@
 import Decimal from "decimal.js";
-import { z } from "zod";
+import { string, z } from "zod";
+import healthUnitCityIdDTO from "./attrs/healthUnit.cityId.dto";
 
 export const HealthUnitSchema = z.object({
     id: z.string(),
@@ -7,11 +8,10 @@ export const HealthUnitSchema = z.object({
     title: z.string(),
     description: z.string().nullable(),
     cnes: z.string().nullable(),
+    cityId: healthUnitCityIdDTO,
     address: z.string().nullable(),
     cep: z.string().nullable(),
     phone: z.string().nullable(),
-    city: z.string(),
-    state: z.string(),
     manager: z.string().nullable(),
     email: z.string().email().nullable(),
     latitude: z.union([z.number(), z.instanceof(Decimal)]), // Aceita number ou Decimal

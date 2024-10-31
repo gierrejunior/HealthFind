@@ -1,7 +1,7 @@
 import { z } from "zod";
 import healthUnitAddressDTO from "./attrs/healthUnit.address.dto";
 import healthUnitCepDTO from "./attrs/healthUnit.cep.dto";
-import healthUnitCityDTO from "./attrs/healthUnit.city.dto";
+import healthUnitCityIdDTO from "./attrs/healthUnit.cityId.dto";
 import healthUnitCnesDTO from "./attrs/healthUnit.cnes.dto";
 import healthUnitDescriptionDTO from "./attrs/healthUnit.description.dto";
 import healthUnitEmailDTO from "./attrs/healthUnit.email.dto";
@@ -10,7 +10,6 @@ import healthUnitLatitudeDTO from "./attrs/healthUnit.latitude.dto";
 import healthUnitLongitudeDTO from "./attrs/healthunit.longitude.dto";
 import healthUnitManagerDTO from "./attrs/healthunit.manager.dto";
 import healthUnitPhoneDTO from "./attrs/healthUnit.phone.dto";
-import healthUnitStateDTO from "./attrs/healthUnit.state.dto";
 import healthUnitTitleDTO from "./attrs/healthUnit.title.dto";
 import healthUnitUnitTypeDTO from "./attrs/healthUnit.unitType.dto";
 
@@ -19,11 +18,10 @@ export const CreateHealthUnitSchema = z.object({
     title: healthUnitTitleDTO,
     description: healthUnitDescriptionDTO.optional(),
     cnes: healthUnitCnesDTO.optional(),
+    cityId: healthUnitCityIdDTO,
     address: healthUnitAddressDTO.optional(),
     cep: healthUnitCepDTO.optional(),
     phone: healthUnitPhoneDTO.optional(),
-    city: healthUnitCityDTO,
-    state: healthUnitStateDTO,
     manager: healthUnitManagerDTO.optional(),
     email: healthUnitEmailDTO.email().optional(),
     latitude: healthUnitLatitudeDTO,

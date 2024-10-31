@@ -1,5 +1,3 @@
-// src/healthunits/controllers/delete-healthunit.controller.ts
-
 import {
     Controller,
     Delete,
@@ -29,7 +27,12 @@ export class DeleteHealthUnitController {
             throw new NotFoundException("HealthUnit not found");
         }
 
-        // Passa o ID do usuário que realizou a exclusão para o serviço de auditoria
+        // Verifica se o usuário tem permissão para deletar a unidade de saúde (se não for ADMIN, compara cityId)
+        if (req.user.role !== "ADMIN" && healthUnit.cityId !== req.user.cityId) {
+            throw new NotFoundException("HealthUnit not found in your city");
+        }
+
+        // Executa a exclusão e registra no serviço de auditoria usando o ID do usuário
         await this.deleteHealthUnitService.execute(id, req.user.id);
 
         return {

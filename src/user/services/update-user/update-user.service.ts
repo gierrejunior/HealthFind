@@ -1,4 +1,3 @@
-// src/user/services/update-user/update-user.service.ts
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Action, User } from "@prisma/client";
 import { AuditLogService } from "src/audit-log/services/audit-log.service"; // Importa o serviço de auditoria
@@ -19,10 +18,17 @@ export class UpdateUserService {
             throw new NotFoundException("User not found");
         }
 
+        // Sanitiza os dados de atualização, convertendo `null` para `undefined` para campos opcionais
+        const sanitizedData = {
+            ...data,
+            role: data.role ?? undefined,
+            cityId: data.cityId ?? undefined,
+        };
+
         // Atualiza o usuário e captura o novo estado
         const updatedUser = await this.prisma.user.update({
             where: { id },
-            data,
+            data: sanitizedData,
         });
 
         // Registra o log de auditoria

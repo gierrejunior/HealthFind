@@ -8,6 +8,7 @@ import {
     UseGuards,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { Role } from "@prisma/client";
 import { hash } from "bcryptjs";
 import { JWTGuard } from "src/auth/guard/jwt-auth.guard";
 import { CaslAbilityGuard } from "src/casl/casl-ability.guard";
@@ -47,6 +48,14 @@ export class CreateUserController {
         const userWithSameUsername = await this.getUserByUsernameService.execute(username);
         if (userWithSameUsername) {
             throw new ConflictException("User with this username already exists");
+        }
+
+        // Define o cityId com base no papel do usuário solicitante
+        if (request.user.role === Role.STAFF) {
+            // STAFF atribui seu próprio cityId ao novo USER
+            data.cityId = request.user.cityId;
+        } else if (request.user.role === Role.USER) {
+            throw new ConflictException("Users cannot create new accounts");
         }
 
         // Hash da senha

@@ -1,5 +1,3 @@
-// src/healthunits/controllers/update-healthunit.controller.ts
-
 import { Body, Controller, HttpStatus, Param, Put, Req, UseGuards } from "@nestjs/common";
 import { JWTGuard } from "src/auth/guard/jwt-auth.guard";
 import { CaslAbilityGuard } from "src/casl/casl-ability.guard";
@@ -18,7 +16,7 @@ export class UpdateHealthUnitController {
     constructor(private readonly updateHealthUnitService: UpdateHealthUnitService) {}
 
     @Put(":id")
-    @CheckAbilities(["update", "HealthUnit"]) // Verifica se o usuário tem permissão para atualizar
+    @CheckAbilities(["update", "HealthUnit"]) // Permissão para atualizar HealthUnit
     async handle(
         @Param("id") id: string,
         @Body(new ZodValidationPipe(HealthUnitUpdateSchema)) data: HealthUnitUpdateDTO,
@@ -26,7 +24,7 @@ export class UpdateHealthUnitController {
     ) {
         const userId = req.user.id;
 
-        // Chama o serviço de atualização da unidade de saúde
+        // CASL já lida com permissões, então não é necessário verificar `cityId` manualmente
         const updatedHealthUnit = await this.updateHealthUnitService.execute(id, data, userId);
 
         return {

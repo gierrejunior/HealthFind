@@ -1,5 +1,5 @@
-// src/casl/casl-ability.factory.ts
 import { AbilityBuilder, AbilityClass, PureAbility, Subject } from "@casl/ability";
+import { prismaQuery } from "@casl/prisma";
 import { Role, User } from "@prisma/client";
 
 export type AppAbility = PureAbility<[string, Subject]>;
@@ -10,40 +10,56 @@ export function defineAbilitiesFor(user: User) {
     // Permissões para ADMIN
     if (user.role === Role.ADMIN) {
         can("manage", "all"); // Admin pode tudo
-
-        // Permissões para STAFF
     } else if (user.role === Role.STAFF) {
-        // Permissões sobre usuários
-        can("read", "User");
-        can("create", "User", { role: Role.USER });
-        can("delete", "User", { role: Role.USER });
-        can("update", "User", { role: Role.USER });
-        cannot("update", "User", "role"); // STAFF não pode alterar roles
+        // Permissões sobre usuários na mesma cidade
+        can("read", "User", { cityId: user.cityId });
+        can("create", "User", { cityId: user.cityId, role: Role.USER });
+        can("delete", "User", { cityId: user.cityId, role: Role.USER });
+        can("update", "User", { cityId: user.cityId, role: Role.USER });
 
-        // Permissões sobre HealthUnits
-        can("create", "HealthUnit");
-        can("read", "HealthUnit");
-        can("update", "HealthUnit", { "createdBy.role": { $ne: Role.ADMIN } }); // STAFF pode editar HealthUnits de USER e STAFF, mas não de ADMIN
-        can("delete", "HealthUnit", { "createdBy.role": { $ne: Role.ADMIN } }); // STAFF pode deletar HealthUnits de USER e STAFF, mas não de ADMIN
+        // STAFF pode mudar o role para STAFF, mas não pode mudar cityId
+        can("update", "User", { cityId: user.cityId, role: Role.STAFF });
+        cannot("update", "User", "cityId");
 
-        // Permissões para USER
+        // Permissões sobre HealthUnits e suas Areas na mesma cidade
+        can("create", ["HealthUnit", "HealthUnitArea", "HealthTeamArea"], {
+            cityId: user.cityId,
+        });
+        can("read", ["HealthUnit", "HealthUnitArea", "HealthTeamArea"], { cityId: user.cityId });
+        can("update", ["HealthUnit", "HealthUnitArea", "HealthTeamArea"], {
+            cityId: user.cityId,
+            "createdBy.role": { $ne: Role.ADMIN },
+        });
+        can("delete", ["HealthUnit", "HealthUnitArea", "HealthTeamArea"], {
+            cityId: user.cityId,
+            "createdBy.role": { $ne: Role.ADMIN },
+        });
     } else {
-        // Permissões sobre sua própria conta
+        // Permissões para USER
         can("read", "User", { id: user.id });
         can("update", "User", { id: user.id });
 
-        // Permissões sobre HealthUnits
-        can("create", "HealthUnit"); // USER pode criar HealthUnits
-        can("read", "HealthUnit"); // USER pode ler todas as HealthUnits
-        can("update", "HealthUnit", { createdById: user.id }); // USER pode editar apenas as HealthUnits que ele criou
-        can("delete", "HealthUnit", { createdById: user.id }); // USER pode deletar apenas as HealthUnits que ele criou
+        can("create", ["HealthUnit", "HealthUnitArea", "HealthTeamArea"], {
+            cityId: user.cityId,
+        });
+        can("read", ["HealthUnit", "HealthUnitArea", "HealthTeamArea"], { cityId: user.cityId });
+        can("update", ["HealthUnit", "HealthUnitArea", "HealthTeamArea"], {
+            cityId: user.cityId,
+            createdById: user.id,
+        });
+        can("delete", ["HealthUnit", "HealthUnitArea", "HealthTeamArea"], {
+            cityId: user.cityId,
+            createdById: user.id,
+        });
     }
 
+    // Usa o `prismaQuery` como o matcher de condições
     return build({
         detectSubjectType: (item) =>
             item && typeof item === "object" && "constructor" in item
                 ? (item as any).constructor
                 : null,
+        conditionsMatcher: prismaQuery, // Usa o matcher específico para Prisma
     });
 }
 

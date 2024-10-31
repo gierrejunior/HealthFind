@@ -11,9 +11,9 @@ export class ListHealthUnitService {
         limit: number,
         title?: string,
         description?: string,
-        city?: string,
+        cityId?: string, // `cityId` para filtrar pelo município
         state?: string,
-        unitTypes?: string[], // Adiciona unitTypes como um parâmetro opcional
+        unitTypes?: string[],
         orderBy?: string,
         sortOrder?: "asc" | "desc",
     ): Promise<{ healthUnits: HealthUnit[]; count: number }> {
@@ -33,9 +33,9 @@ export class ListHealthUnitService {
                     mode: "insensitive",
                 },
             }),
-            ...(city && { city }),
+            ...(cityId && { cityId }), // Filtra pelo cityId associado ao usuário ou especificado
             ...(state && { state }),
-            ...(unitTypes && { unitType: { in: unitTypes } }), // Filtra por unitTypes, se fornecido
+            ...(unitTypes && { unitType: { in: unitTypes } }),
         };
 
         // Realiza a busca no banco de dados com as condições fornecidas

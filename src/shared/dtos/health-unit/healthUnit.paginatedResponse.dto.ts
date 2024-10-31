@@ -1,6 +1,6 @@
 // healthunit.paginatedResponse.dto.ts
 import { z } from "zod";
-import { HealthUnitSchema } from "./healthUnit.dto"
+import { HealthUnitSchema } from "./healthUnit.dto";
 
 export const PaginationMetadataSchema = z.object({
     type: z.literal("paginated"),

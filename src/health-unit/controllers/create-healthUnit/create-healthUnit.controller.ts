@@ -35,7 +35,9 @@ export class CreateHealthUnitController {
         @Body(new ZodValidationPipe(CreateHealthUnitSchema)) data: CreateHealthUnitDTO,
         @Req() request: HealthFindRequest,
     ) {
-        // Verifica se o `cnes` já existe antes de criar a unidade
+        const { user } = request;
+
+        // Verifica se o CNES já existe antes de criar a unidade
         if (data.cnes) {
             const healthUnitWithSameCnes = await this.getHealthUnitByCnes.execute(data.cnes);
             if (healthUnitWithSameCnes) {
@@ -43,8 +45,13 @@ export class CreateHealthUnitController {
             }
         }
 
+        // Define o `cityId` para STAFF e USER com base no usuário logado, garantindo que seja string
+        if (user.role !== "ADMIN") {
+            data.cityId = user.cityId as string; // Garantimos que `cityId` será string
+        }
+
         // Cria a unidade de saúde e registra a auditoria
-        const healthUnit = await this.createHealthUnitService.execute(data, request.user.id);
+        const healthUnit = await this.createHealthUnitService.execute(data, user.id);
 
         return {
             data: healthUnit,
