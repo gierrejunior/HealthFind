@@ -1,5 +1,4 @@
-import { ExecutionContext, Injectable } from "@nestjs/common";
-
+import { ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
 import { UserDTO } from "src/shared/dtos/user/user.dto";
 import { GetUserFromTokenService } from "src/user/services";
 
@@ -10,18 +9,18 @@ import { GetUserFromTokenService } from "src/user/services";
  */
 @Injectable()
 export class JWTGuard {
-    constructor(private readonly getuserFromTokenService: GetUserFromTokenService) {}
+    constructor(private readonly getUserFromTokenService: GetUserFromTokenService) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
         const token = request.headers.authorization;
+
         if (!token) {
-            return false;
+            throw new ForbiddenException("Access denied. Unauthorized user.");
         }
-        const user: UserDTO = await this.getuserFromTokenService.execute(token);
-        if (!user) {
-            return false;
-        }
+
+        const user: UserDTO = await this.getUserFromTokenService.execute(token);
+
         request.user = user;
         return true;
     }

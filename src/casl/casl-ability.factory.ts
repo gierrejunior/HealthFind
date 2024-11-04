@@ -1,7 +1,8 @@
 import { AbilityBuilder, AbilityClass, FieldMatcher, PureAbility, Subject } from "@casl/ability";
 import { prismaQuery } from "@casl/prisma";
 import { User } from "@prisma/client";
-import { defineHealthPermissions } from "./casl-healthPermissions";
+import { defineCityPermissions } from "./casl-city-permissions";
+import { defineHealthPermissions } from "./casl-health-permissions";
 import { defineUserPermissions } from "./casl-user-permissions";
 
 // Define FieldMatcher para verificar se o campo está na lista permitida
@@ -16,6 +17,7 @@ export function defineAbilitiesFor(user: User) {
 
     defineUserPermissions(user, can, cannot);
     defineHealthPermissions(user, can);
+    defineCityPermissions(user, can, cannot);
 
     return build({
         detectSubjectType: (item) =>

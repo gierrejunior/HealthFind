@@ -11,11 +11,6 @@ export class RestrictedAccessGuard implements CanActivate {
         const request = context.switchToHttp().getRequest();
         const user = request.user;
 
-        // Verifique se o usuário está presente (assumindo que o JWTGuard já autenticou)
-        if (!user) {
-            throw new ForbiddenException("Acesso negado. Usuário não autenticado.");
-        }
-
         // Pega o cityId do usuário
         const cityId = user.cityId;
 
