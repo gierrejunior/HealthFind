@@ -12,11 +12,7 @@ async function main() {
         create: {
             username: "admin",
             firstName: "admin",
-<<<<<<< HEAD:seed.js
             lastName: "Doe",
-=======
-            lastName: "admin",
->>>>>>> a87e275 (create subscriptios table):seed.cjs
             email: "admin@example.com",
             password: await hashPassword("admin123"),
             role: "ADMIN",
@@ -250,6 +246,41 @@ async function main() {
         },
     });
 
+    // Criação da Assinatura (Subscription) associada a `city1`
+    const subscription2 = await prisma.subscription.create({
+        data: {
+            cityId: city2.id,
+            status: "SUSPENDED",
+            startDate: new Date(),
+            nextBillingDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+            createdAt: new Date(),
+        },
+    });
+
+    // Cria um pagamento para a assinatura `subscription1`
+    const payment2 = await prisma.payment.create({
+        data: {
+            subscriptionId: subscription2.id,
+            amount: 100.0,
+            status: "FAILED",
+            paymentDate: new Date(),
+            dueDate: subscription1.nextBillingDate,
+            retryCount: 0,
+            createdAt: new Date(),
+        },
+    });
+
+    // Cria uma fatura (Invoice) para o pagamento associado a `subscription1`
+    const invoice2 = await prisma.invoice.create({
+        data: {
+            subscriptionId: subscription1.id,
+            paymentId: payment2.id,
+            amount: 100.0,
+            dueDate: subscription1.nextBillingDate,
+            status: "OVERDUE",
+            createdAt: new Date(),
+        },
+    });
     const user2 = await prisma.user.upsert({
         where: { email: "staffcity1@example.com" },
         update: {},
@@ -260,73 +291,6 @@ async function main() {
             email: "staffcity1@example.com",
             password: await hashPassword("staffcity1"),
             role: "STAFF",
-<<<<<<< HEAD:seed.js
-=======
-            cityId: city1.id,
-        },
-    });
-
-    // Criação da Assinatura (Subscription) associada a `city2` já suspensa
-    const subscription2 = await prisma.subscription.create({
-        data: {
-            cityId: city2.id,
-            status: "SUSPENDED", // A assinatura já começa suspensa
-            startDate: new Date(),
-            nextBillingDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
-            createdAt: new Date(),
-        },
-    });
-
-    // Cria um pagamento para a assinatura `subscription2` com falha
-    const payment2 = await prisma.payment.create({
-        data: {
-            subscriptionId: subscription2.id,
-            amount: 100.0,
-            status: "FAILED", // Indica que o pagamento falhou
-            paymentDate: new Date(),
-            dueDate: subscription2.nextBillingDate,
-            retryCount: 0,
-            createdAt: new Date(),
-        },
-    });
-
-    // Cria uma fatura (Invoice) para o pagamento associado a `subscription2`, indicando que está atrasada
-    const invoice2 = await prisma.invoice.create({
-        data: {
-            subscriptionId: subscription2.id,
-            paymentId: payment2.id,
-            amount: 100.0,
-            dueDate: subscription2.nextBillingDate,
-            status: "OVERDUE", // Indica que a fatura está atrasada
-            createdAt: new Date(),
-        },
-    });
-
-    const user3 = await prisma.user.upsert({
-        where: { email: "staffcity2@example.com" },
-        update: {},
-        create: {
-            username: "staffcity2",
-            firstName: "staffcity2",
-            lastName: "Doe2",
-            email: "staffcity2@example.com",
-            password: await hashPassword("staffcity2"),
-            role: "STAFF",
-            cityId: city2.id,
-        },
-    });
-
-    const user4 = await prisma.user.upsert({
-        where: { email: "usercity1@example.com" },
-        update: {},
-        create: {
-            username: "usercity1",
-            firstName: "usercity1",
-            lastName: "Doe2",
-            email: "usercity1@example.com",
-            password: await hashPassword("usercity1"),
-            role: "USER",
->>>>>>> a87e275 (create subscriptios table):seed.cjs
             cityId: city1.id,
         },
     });
@@ -335,7 +299,6 @@ async function main() {
         where: { email: "usercity2@example.com" },
         update: {},
         create: {
-<<<<<<< HEAD:seed.js
             username: "staffcity2",
             firstName: "staffcity2",
             lastName: "Doe2",
@@ -355,15 +318,6 @@ async function main() {
             password: await hashPassword("usercity1"),
             role: "USER",
             cityId: city1.id,
-=======
-            username: "usercity2",
-            firstName: "usercity2",
-            lastName: "Doe2",
-            email: "usercity2@example.com",
-            password: await hashPassword("usercity2"),
-            role: "USER",
-            cityId: city2.id,
->>>>>>> a87e275 (create subscriptios table):seed.cjs
         },
     });
 
