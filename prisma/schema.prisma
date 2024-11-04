@@ -19,6 +19,36 @@ enum Role {
   ADMIN
 }
 
+enum Action {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+// Enum para status da assinatura
+enum SubscriptionStatus {
+  ACTIVE // Assinatura ativa
+  SUSPENDED // Assinatura suspensa por falta de pagamento
+  CANCELLED // Assinatura cancelada
+  EXPIRED // Assinatura expirou e não foi renovada
+}
+
+// Enum para status do pagamento
+enum PaymentStatus {
+  PENDING // Pagamento pendente
+  SUCCESS // Pagamento concluído com sucesso
+  FAILED // Pagamento falhou
+  REFUNDED // Pagamento reembolsado
+  CANCELLED // Pagamento cancelado
+}
+
+// Enum para status da fatura
+enum InvoiceStatus {
+  GENERATED // Fatura gerada
+  PAID // Fatura paga
+  OVERDUE // Fatura vencida
+}
+
 model User {
   id        String    @id @default(uuid())
   email     String    @unique
@@ -33,7 +63,7 @@ model User {
   isActive  Boolean   @default(true) @map("is_active")
   cityId    String?
 
-  city City? @relation(fields: [cityId], references: [id])
+  city                       City?               @relation(fields: [cityId], references: [id])
   createdByHealthUnits       HealthUnit[]        @relation("CreatedBy")
   updatedByHealthUnits       HealthUnit[]        @relation("UpdatedBy")
   createdByHealthUnitArea    HealthUnitArea[]    @relation("CreatedBy")
@@ -57,19 +87,6 @@ model User {
   AuditLog                   AuditLog[]
 
   @@map("users")
-}
-
-model City {
-  id          String       @id @default(uuid())
-  city        String
-  uf          String
-  geojson     Json // Geometria do município para delimitações geográficas
-  healthUnits HealthUnit[]
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @updatedAt @map("updated_at")
-  User        User[]
-
-  @@map("cities")
 }
 
 model HealthUnit {
@@ -285,24 +302,79 @@ model MicroArea {
   @@map("micro_areas")
 }
 
+// Tabela de cidades
+model City {
+  id           String        @id @default(uuid())
+  cnpj         String        @unique
+  name         String
+  state        String // Unidade federativa (UF)
+  geojson      Json
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  Subscription Subscription?
+  User         User[]
+  HealthUnit   HealthUnit[]
+}
+
+// Tabela de assinaturas para cidades
+model Subscription {
+  id               String             @id @default(uuid())
+  cityId           String             @unique
+  city             City               @relation(fields: [cityId], references: [id])
+  status           SubscriptionStatus // Status da assinatura
+  startDate        DateTime // Data de início da assinatura
+  endDate          DateTime? // Data de término
+  cancellationDate DateTime? // Data de cancelamento, se aplicável
+  nextBillingDate  DateTime // Próxima data de cobrança
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  Payments         Payment[]
+  Invoices         Invoice[]
+}
+
+// Tabela de pagamentos para cidades
+model Payment {
+  id             String        @id @default(uuid())
+  subscriptionId String
+  subscription   Subscription  @relation(fields: [subscriptionId], references: [id])
+  amount         Float // Valor do pagamento
+  status         PaymentStatus // Status do pagamento
+  paymentDate    DateTime? // Data de processamento
+  dueDate        DateTime // Data de vencimento
+  retryCount     Int           @default(0) // Contador de tentativas
+  failureReason  String? // Motivo da falha
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  Invoice        Invoice[]
+}
+
+// Tabela de faturas para cidades
+model Invoice {
+  id             String        @id @default(uuid())
+  subscriptionId String
+  subscription   Subscription  @relation(fields: [subscriptionId], references: [id])
+  paymentId      String? // Relaciona a um pagamento
+  payment        Payment?      @relation(fields: [paymentId], references: [id])
+  amount         Float // Valor total
+  dueDate        DateTime // Data de vencimento
+  status         InvoiceStatus // Status da fatura
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+// Modelo de Auditoria
 model AuditLog {
   id         String   @id @default(uuid())
   entityId   String // ID da entidade afetada
   entityType String // Tipo da entidade, como "User", "HealthUnit", etc.
   action     Action // Tipo de ação: "CREATE", "UPDATE", ou "DELETE"
-  userId     String? // ID do usuário que realizou a ação (opcional para aceitar SetNull)
+  userId     String? // ID do usuário que realizou a ação (opcional)
   oldData    Json? // Dados antigos (opcional para "CREATE")
   newData    Json? // Dados novos (opcional para "DELETE")
   createdAt  DateTime @default(now()) @map("created_at")
 
-  // Relacionamento com o modelo User para referenciar o usuário que fez a ação
+  // Relacionamento opcional com o modelo User para referenciar o usuário que fez a ação
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@map("audit_logs")
-}
-
-enum Action {
-  CREATE
-  UPDATE
-  DELETE
 }

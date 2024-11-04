@@ -1,3 +1,4 @@
+// src/audit-log/audit-log.service.ts
 import { Injectable } from "@nestjs/common";
 import { Action } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -10,9 +11,9 @@ export class AuditLogService {
         entityId: string,
         entityType: string,
         action: Action,
-        userId: string | null = null, // `userId` opcional
-        oldData?: Record<string, any>, // Removido `null` como valor padrão
-        newData?: Record<string, any>, // Removido `null` como valor padrão
+        userId: string | null = null,
+        oldData?: Record<string, any>,
+        newData?: Record<string, any>,
     ): Promise<void> {
         try {
             await this.prisma.auditLog.create({
@@ -21,8 +22,8 @@ export class AuditLogService {
                     entityType,
                     action,
                     userId,
-                    oldData: oldData ? JSON.stringify(oldData) : undefined, // Converte para JSON ou `undefined`
-                    newData: newData ? JSON.stringify(newData) : undefined, // Converte para JSON ou `undefined`
+                    oldData: oldData ? JSON.stringify(oldData) : undefined,
+                    newData: newData ? JSON.stringify(newData) : undefined,
                 },
             });
         } catch (error) {

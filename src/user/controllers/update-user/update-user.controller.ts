@@ -10,6 +10,7 @@ import {
 } from "@nestjs/common";
 import { Role } from "@prisma/client";
 import { JWTGuard } from "src/auth/guard/jwt-auth.guard";
+import { RestrictedAccessGuard } from "src/auth/guard/restricted-access/restricted-access.guard";
 import { AuthRequest } from "src/auth/interfaces/auth-request.interface";
 import { CaslAbilityGuard } from "src/casl/casl-ability.guard";
 import { CheckAbilities } from "src/casl/check-abilities.decorator";
@@ -18,7 +19,7 @@ import { ZodValidationPipe } from "src/shared/pipes/zod-validation-pipe";
 import { UpdateUserService } from "../../services/update-user/update-user.service";
 
 @Controller("users")
-@UseGuards(JWTGuard, CaslAbilityGuard)
+@UseGuards(JWTGuard, CaslAbilityGuard, RestrictedAccessGuard)
 export class UpdateUserController {
     constructor(private updateUserService: UpdateUserService) {}
 

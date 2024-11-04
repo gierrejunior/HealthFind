@@ -8,13 +8,14 @@ import {
     UseGuards,
 } from "@nestjs/common";
 import { JWTGuard } from "src/auth/guard/jwt-auth.guard";
+import { RestrictedAccessGuard } from "src/auth/guard/restricted-access/restricted-access.guard";
 import { CaslAbilityGuard } from "src/casl/casl-ability.guard";
 import { CheckAbilities } from "src/casl/check-abilities.decorator";
 import { GetHealthUnitByIdService } from "src/health-unit/services";
 import { HealthFindRequest } from "src/shared/interfaces/healthFindRequest.interface";
 
 @Controller("healthunits")
-@UseGuards(JWTGuard, CaslAbilityGuard)
+@UseGuards(JWTGuard, CaslAbilityGuard, RestrictedAccessGuard)
 export class GetHealthUnitbyIdController {
     constructor(private readonly getHealthUnitByIdService: GetHealthUnitByIdService) {}
 

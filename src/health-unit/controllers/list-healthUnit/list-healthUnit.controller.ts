@@ -1,5 +1,6 @@
 import { Controller, Get, HttpStatus, Query, Req, UseGuards } from "@nestjs/common";
 import { JWTGuard } from "src/auth/guard/jwt-auth.guard";
+import { RestrictedAccessGuard } from "src/auth/guard/restricted-access/restricted-access.guard";
 import { CaslAbilityGuard } from "src/casl/casl-ability.guard";
 import { CheckAbilities } from "src/casl/check-abilities.decorator";
 import { ListHealthUnitService } from "src/health-unit/services";
@@ -10,7 +11,7 @@ import { ZodValidationPipe } from "src/shared/pipes/zod-validation-pipe";
 import { GetMetadataService } from "src/shared/utils/services";
 
 @Controller("healthunits")
-@UseGuards(JWTGuard, CaslAbilityGuard)
+@UseGuards(JWTGuard, CaslAbilityGuard, RestrictedAccessGuard)
 export class ListHealthUnitsController {
     constructor(
         private readonly listHealthUnitService: ListHealthUnitService,

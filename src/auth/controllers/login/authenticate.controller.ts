@@ -14,7 +14,10 @@ export class AuthenticateController {
         const accessToken = await this.authenticateService.execute(body);
 
         return {
-            data: accessToken,
+            data: {
+                accessToken: accessToken.accessToken,
+                restrictedAccess: accessToken.restrictedAccess, // Adiciona o estado de acesso restrito na resposta
+            },
             meta: null,
             message: "auth.login.success",
             status: HttpStatus.OK,

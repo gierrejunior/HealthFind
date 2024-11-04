@@ -11,6 +11,7 @@ import {
 import { Role } from "@prisma/client";
 import { hash } from "bcryptjs";
 import { JWTGuard } from "src/auth/guard/jwt-auth.guard";
+import { RestrictedAccessGuard } from "src/auth/guard/restricted-access/restricted-access.guard";
 import { CaslAbilityGuard } from "src/casl/casl-ability.guard";
 import { CheckAbilities } from "src/casl/check-abilities.decorator";
 import {
@@ -27,7 +28,7 @@ import {
 } from "../../services";
 
 @Controller("users")
-@UseGuards(JWTGuard, CaslAbilityGuard)
+@UseGuards(JWTGuard, CaslAbilityGuard, RestrictedAccessGuard)
 export class CreateUserController {
     constructor(
         private getUserByEmailService: GetUserByEmailService,

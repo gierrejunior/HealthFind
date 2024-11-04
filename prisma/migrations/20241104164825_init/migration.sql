@@ -4,6 +4,15 @@ CREATE TYPE "Role" AS ENUM ('USER', 'STAFF', 'ADMIN');
 -- CreateEnum
 CREATE TYPE "Action" AS ENUM ('CREATE', 'UPDATE', 'DELETE');
 
+-- CreateEnum
+CREATE TYPE "SubscriptionStatus" AS ENUM ('ACTIVE', 'SUSPENDED', 'CANCELLED', 'EXPIRED');
+
+-- CreateEnum
+CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'SUCCESS', 'FAILED', 'REFUNDED', 'CANCELLED');
+
+-- CreateEnum
+CREATE TYPE "InvoiceStatus" AS ENUM ('GENERATED', 'PAID', 'OVERDUE');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
@@ -20,18 +29,6 @@ CREATE TABLE "users" (
     "cityId" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "cities" (
-    "id" TEXT NOT NULL,
-    "city" TEXT NOT NULL,
-    "uf" TEXT NOT NULL,
-    "geojson" JSONB NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "cities_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -196,6 +193,64 @@ CREATE TABLE "micro_areas" (
 );
 
 -- CreateTable
+CREATE TABLE "City" (
+    "id" TEXT NOT NULL,
+    "cnpj" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "state" TEXT NOT NULL,
+    "geojson" JSONB NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "City_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Subscription" (
+    "id" TEXT NOT NULL,
+    "cityId" TEXT NOT NULL,
+    "status" "SubscriptionStatus" NOT NULL,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3),
+    "cancellationDate" TIMESTAMP(3),
+    "nextBillingDate" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Subscription_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Payment" (
+    "id" TEXT NOT NULL,
+    "subscriptionId" TEXT NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
+    "status" "PaymentStatus" NOT NULL,
+    "paymentDate" TIMESTAMP(3),
+    "dueDate" TIMESTAMP(3) NOT NULL,
+    "retryCount" INTEGER NOT NULL DEFAULT 0,
+    "failureReason" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Payment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Invoice" (
+    "id" TEXT NOT NULL,
+    "subscriptionId" TEXT NOT NULL,
+    "paymentId" TEXT,
+    "amount" DOUBLE PRECISION NOT NULL,
+    "dueDate" TIMESTAMP(3) NOT NULL,
+    "status" "InvoiceStatus" NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Invoice_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "audit_logs" (
     "id" TEXT NOT NULL,
     "entityId" TEXT NOT NULL,
@@ -224,11 +279,17 @@ CREATE UNIQUE INDEX "health_unit_areas_health_unit_id_key" ON "health_unit_areas
 -- CreateIndex
 CREATE UNIQUE INDEX "health_team_areas_health_team_id_key" ON "health_team_areas"("health_team_id");
 
--- AddForeignKey
-ALTER TABLE "users" ADD CONSTRAINT "users_cityId_fkey" FOREIGN KEY ("cityId") REFERENCES "cities"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+-- CreateIndex
+CREATE UNIQUE INDEX "City_cnpj_key" ON "City"("cnpj");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Subscription_cityId_key" ON "Subscription"("cityId");
 
 -- AddForeignKey
-ALTER TABLE "health_units" ADD CONSTRAINT "health_units_cityId_fkey" FOREIGN KEY ("cityId") REFERENCES "cities"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "users" ADD CONSTRAINT "users_cityId_fkey" FOREIGN KEY ("cityId") REFERENCES "City"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "health_units" ADD CONSTRAINT "health_units_cityId_fkey" FOREIGN KEY ("cityId") REFERENCES "City"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "health_units" ADD CONSTRAINT "health_units_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -316,6 +377,18 @@ ALTER TABLE "micro_areas" ADD CONSTRAINT "micro_areas_updated_by_id_fkey" FOREIG
 
 -- AddForeignKey
 ALTER TABLE "micro_areas" ADD CONSTRAINT "micro_areas_health_agent_id_fkey" FOREIGN KEY ("health_agent_id") REFERENCES "health_agents"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_cityId_fkey" FOREIGN KEY ("cityId") REFERENCES "City"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Payment" ADD CONSTRAINT "Payment_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_paymentId_fkey" FOREIGN KEY ("paymentId") REFERENCES "Payment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;

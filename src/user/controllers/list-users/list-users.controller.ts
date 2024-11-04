@@ -1,6 +1,7 @@
 import { Controller, Get, HttpStatus, Query, Req, UseGuards } from "@nestjs/common";
 import { Role } from "@prisma/client";
 import { JWTGuard } from "src/auth/guard/jwt-auth.guard";
+import { RestrictedAccessGuard } from "src/auth/guard/restricted-access/restricted-access.guard";
 import { AuthRequest } from "src/auth/interfaces/auth-request.interface";
 import { CaslAbilityGuard } from "src/casl/casl-ability.guard";
 import { CheckAbilities } from "src/casl/check-abilities.decorator";
@@ -11,7 +12,7 @@ import { GetMetadataService } from "src/shared/utils/services";
 import { ListUsersService } from "src/user/services/list-users/list-users.service";
 
 @Controller("users")
-@UseGuards(JWTGuard, CaslAbilityGuard)
+@UseGuards(JWTGuard, CaslAbilityGuard, RestrictedAccessGuard)
 export class ListUsersController {
     constructor(
         private readonly listUsersService: ListUsersService,

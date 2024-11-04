@@ -32,5 +32,6 @@ import * as AuthServices from "./services";
     ],
     controllers: [...Object.values(AuthControllers)],
     providers: [...Object.values(AuthServices), JwtStrategy, JWTGuard],
+    exports: [AuthServices.PaymentVerificationService],
 })
 export class AuthModule {}

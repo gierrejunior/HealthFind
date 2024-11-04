@@ -7,12 +7,16 @@ async function main() {
 
     // Cria ou atualiza usuários com senha hasheada usando upsert
     const user1 = await prisma.user.upsert({
-        where: { email: "johndoe@example.com" },
+        where: { email: "admin@example.com" },
         update: {},
         create: {
             username: "admin",
             firstName: "admin",
+<<<<<<< HEAD:seed.js
             lastName: "Doe",
+=======
+            lastName: "admin",
+>>>>>>> a87e275 (create subscriptios table):seed.cjs
             email: "admin@example.com",
             password: await hashPassword("admin123"),
             role: "ADMIN",
@@ -21,8 +25,9 @@ async function main() {
 
     const city1 = await prisma.city.create({
         data: {
-            city: "Ananindeua",
-            uf: "PA",
+            name: "Ananindeua",
+            state: "PA",
+            cnpj: "12345678000101",
             geojson: {
                 type: "Polygon",
                 coordinates: [
@@ -100,10 +105,47 @@ async function main() {
         },
     });
 
+    // Criação da Assinatura (Subscription) associada a `city1`
+    const subscription1 = await prisma.subscription.create({
+        data: {
+            cityId: city1.id,
+            status: "ACTIVE",
+            startDate: new Date(),
+            nextBillingDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+            createdAt: new Date(),
+        },
+    });
+
+    // Cria um pagamento para a assinatura `subscription1`
+    const payment1 = await prisma.payment.create({
+        data: {
+            subscriptionId: subscription1.id,
+            amount: 100.0,
+            status: "SUCCESS",
+            paymentDate: new Date(),
+            dueDate: subscription1.nextBillingDate,
+            retryCount: 0,
+            createdAt: new Date(),
+        },
+    });
+
+    // Cria uma fatura (Invoice) para o pagamento associado a `subscription1`
+    const invoice1 = await prisma.invoice.create({
+        data: {
+            subscriptionId: subscription1.id,
+            paymentId: payment1.id,
+            amount: 100.0,
+            dueDate: subscription1.nextBillingDate,
+            status: "PAID",
+            createdAt: new Date(),
+        },
+    });
+
     const city2 = await prisma.city.create({
         data: {
-            city: "Belem",
-            uf: "PA",
+            name: "Belem",
+            state: "PA",
+            cnpj: "10987654321001",
             geojson: {
                 type: "Polygon",
                 coordinates: [
@@ -209,7 +251,7 @@ async function main() {
     });
 
     const user2 = await prisma.user.upsert({
-        where: { email: "janedoe@example.com" },
+        where: { email: "staffcity1@example.com" },
         update: {},
         create: {
             username: "staffcity1",
@@ -218,14 +260,82 @@ async function main() {
             email: "staffcity1@example.com",
             password: await hashPassword("staffcity1"),
             role: "STAFF",
+<<<<<<< HEAD:seed.js
+=======
             cityId: city1.id,
         },
     });
 
+    // Criação da Assinatura (Subscription) associada a `city2` já suspensa
+    const subscription2 = await prisma.subscription.create({
+        data: {
+            cityId: city2.id,
+            status: "SUSPENDED", // A assinatura já começa suspensa
+            startDate: new Date(),
+            nextBillingDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+            createdAt: new Date(),
+        },
+    });
+
+    // Cria um pagamento para a assinatura `subscription2` com falha
+    const payment2 = await prisma.payment.create({
+        data: {
+            subscriptionId: subscription2.id,
+            amount: 100.0,
+            status: "FAILED", // Indica que o pagamento falhou
+            paymentDate: new Date(),
+            dueDate: subscription2.nextBillingDate,
+            retryCount: 0,
+            createdAt: new Date(),
+        },
+    });
+
+    // Cria uma fatura (Invoice) para o pagamento associado a `subscription2`, indicando que está atrasada
+    const invoice2 = await prisma.invoice.create({
+        data: {
+            subscriptionId: subscription2.id,
+            paymentId: payment2.id,
+            amount: 100.0,
+            dueDate: subscription2.nextBillingDate,
+            status: "OVERDUE", // Indica que a fatura está atrasada
+            createdAt: new Date(),
+        },
+    });
+
     const user3 = await prisma.user.upsert({
-        where: { email: "janedoe@example.com" },
+        where: { email: "staffcity2@example.com" },
         update: {},
         create: {
+            username: "staffcity2",
+            firstName: "staffcity2",
+            lastName: "Doe2",
+            email: "staffcity2@example.com",
+            password: await hashPassword("staffcity2"),
+            role: "STAFF",
+            cityId: city2.id,
+        },
+    });
+
+    const user4 = await prisma.user.upsert({
+        where: { email: "usercity1@example.com" },
+        update: {},
+        create: {
+            username: "usercity1",
+            firstName: "usercity1",
+            lastName: "Doe2",
+            email: "usercity1@example.com",
+            password: await hashPassword("usercity1"),
+            role: "USER",
+>>>>>>> a87e275 (create subscriptios table):seed.cjs
+            cityId: city1.id,
+        },
+    });
+
+    const user5 = await prisma.user.upsert({
+        where: { email: "usercity2@example.com" },
+        update: {},
+        create: {
+<<<<<<< HEAD:seed.js
             username: "staffcity2",
             firstName: "staffcity2",
             lastName: "Doe2",
@@ -245,6 +355,15 @@ async function main() {
             password: await hashPassword("usercity1"),
             role: "USER",
             cityId: city1.id,
+=======
+            username: "usercity2",
+            firstName: "usercity2",
+            lastName: "Doe2",
+            email: "usercity2@example.com",
+            password: await hashPassword("usercity2"),
+            role: "USER",
+            cityId: city2.id,
+>>>>>>> a87e275 (create subscriptios table):seed.cjs
         },
     });
 
@@ -437,6 +556,182 @@ async function main() {
         },
     });
 
+    // Cria uma Unidade de Saúde para city2
+    const healthUnit2 = await prisma.healthUnit.create({
+        data: {
+            unitType: "UBS",
+            title: "Secondary Health Unit",
+            description: "Healthcare center for city2",
+            cnes: "2345678",
+            address: "456 Health St",
+            cep: "98765-432",
+            phone: "(11) 8765-4321",
+            cityId: city2.id,
+            manager: "Manager 2",
+            email: "healthunit2@example.com",
+            latitude: new Prisma.Decimal(-1.23), // Dentro da área de city2
+            longitude: new Prisma.Decimal(-48.35), // Dentro da área de city2
+            createdById: user1.id,
+            updatedById: user2.id,
+        },
+    });
+
+    // Cria equipe de Saúde associada à unidade em city2
+    const healthTeam2 = await prisma.healthTeam.create({
+        data: {
+            title: "Team 2",
+            description: "Health Team for city2",
+            healthUnitId: healthUnit2.id,
+            createdById: user1.id,
+            updatedById: user2.id,
+        },
+    });
+
+    // Criação do Agente de Saúde (ACS) para city2
+    const healthAgent2 = await prisma.healthAgent.create({
+        data: {
+            firstName: "AgentFirst2",
+            lastName: "AgentLast2",
+            phone: "(11) 98765-4321",
+            healthTeamId: healthTeam2.id,
+            createdById: user1.id,
+            updatedById: user2.id,
+        },
+    });
+
+    // Criação de múltiplas microáreas associadas ao ACS em city2
+    const microArea3 = await prisma.microArea.create({
+        data: {
+            title: "MicroArea 3",
+            number_micro_area: 201,
+            geojson: JSON.stringify({
+                type: "Polygon",
+                coordinates: [
+                    [
+                        [-48.36, -1.22],
+                        [-48.36, -1.23],
+                        [-48.35, -1.23],
+                        [-48.35, -1.22],
+                        [-48.36, -1.22],
+                    ],
+                ],
+            }),
+            healthAgentId: healthAgent2.id,
+            createdById: user1.id,
+            updatedById: user2.id,
+        },
+    });
+
+    const microArea4 = await prisma.microArea.create({
+        data: {
+            title: "MicroArea 4",
+            number_micro_area: 202,
+            geojson: JSON.stringify({
+                type: "Polygon",
+                coordinates: [
+                    [
+                        [-48.34, -1.22],
+                        [-48.34, -1.23],
+                        [-48.33, -1.23],
+                        [-48.33, -1.22],
+                        [-48.34, -1.22],
+                    ],
+                ],
+            }),
+            healthAgentId: healthAgent2.id,
+            createdById: user1.id,
+            updatedById: user2.id,
+        },
+    });
+
+    // Cria Área da Equipe como união das microáreas do agente para city2
+    const healthTeamArea2 = await prisma.healthTeamArea.create({
+        data: {
+            title: "Team Area 2",
+            geojson: JSON.stringify({
+                type: "Polygon",
+                coordinates: [
+                    [
+                        [-48.36, -1.22],
+                        [-48.36, -1.24],
+                        [-48.33, -1.24],
+                        [-48.33, -1.22],
+                        [-48.36, -1.22],
+                    ],
+                ],
+            }),
+            healthTeamId: healthTeam2.id,
+            createdById: user1.id,
+            updatedById: user2.id,
+        },
+    });
+
+    // Cria Área da Unidade como união das áreas das equipes para city2
+    const healthUnitArea2 = await prisma.healthUnitArea.create({
+        data: {
+            title: "Unit Area 2",
+            geojson: JSON.stringify({
+                type: "Polygon",
+                coordinates: [
+                    [
+                        [-48.37, -1.22],
+                        [-48.37, -1.25],
+                        [-48.32, -1.25],
+                        [-48.32, -1.22],
+                        [-48.37, -1.22],
+                    ],
+                ],
+            }),
+            healthUnitId: healthUnit2.id,
+            createdById: user1.id,
+            updatedById: user2.id,
+        },
+    });
+
+    // Cria outros profissionais de saúde associados à equipe em city2
+    const nurse2 = await prisma.nurse.create({
+        data: {
+            firstName: "NurseFirst2",
+            lastName: "NurseLast2",
+            coren: "COREN234",
+            healthTeamId: healthTeam2.id,
+            createdById: user1.id,
+            updatedById: user2.id,
+        },
+    });
+
+    const doctor2 = await prisma.doctor.create({
+        data: {
+            firstName: "DoctorFirst2",
+            lastName: "DoctorLast2",
+            crm: "CRM23456",
+            specialty: "Cardiology",
+            healthTeamId: healthTeam2.id,
+            createdById: user1.id,
+            updatedById: user2.id,
+        },
+    });
+
+    const nursingTechnician2 = await prisma.nursingTechnician.create({
+        data: {
+            name: "NursingTechnician2",
+            coren: "COREN789",
+            healthTeamId: healthTeam2.id,
+            createdById: user1.id,
+            updatedById: user2.id,
+        },
+    });
+
+    const dentist2 = await prisma.dentist.create({
+        data: {
+            firstName: "DentistFirst2",
+            lastName: "DentistLast2",
+            cro: "CRO234",
+            healthTeamId: healthTeam2.id,
+            createdById: user1.id,
+            updatedById: user2.id,
+        },
+    });
     console.log("Banco de dados populado com dados de teste!");
 }
 
